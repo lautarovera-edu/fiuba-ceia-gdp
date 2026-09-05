@@ -274,3 +274,6 @@ TSWLatexianTemp*
 
 # Makeindex log files
 *.lpz
+
+# PDF de las entregas generados por make (se regeneran con "make all")
+GdP_Vera_Lautaro_V*
