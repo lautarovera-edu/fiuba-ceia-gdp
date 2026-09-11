@@ -6,6 +6,9 @@
 \usepackage{tikz}
 \usetikzlibrary{positioning, arrows.meta, fit, backgrounds, calc}
 
+% Notas al pie numeradas: la clase las define con símbolos (*, †, ...)
+\renewcommand{\thefootnote}{\arabic{footnote}}
+
 % ---------------------------------------------------------------------------
 % REVISION QUE SE COMPILA
 %   1 -> secciones 1 a 5     2 -> hasta la 9     3 -> hasta la 12    4 -> plan completo
@@ -49,7 +52,7 @@
 \empresaCliente{MobileKnowledge}
 
 \fechaINICIO{25 de agosto de 2026}		%Fecha de inicio de la cursada de GdP \fechaInicioName
-\fechaFINALPlan{27 de octubre de 2026} 	%Fecha de final de cursada de GdP
+\fechaFINALPlan{13 de octubre de 2026} 	%Fecha de final de cursada de GdP
 \fechaFINALTrabajo{15 de noviembre de 2027}	%Fecha de defensa pública del trabajo final
 
 
@@ -83,13 +86,13 @@ Revisión & \multicolumn{1}{c|}{\cellcolor[HTML]{C0C0C0}Detalles de los cambios 
 1      & Se completa hasta la sección 5 inclusive               & 8 de septiembre de 2026 \\ \hline
 \fi
 \ifnum\revision>1
-2      & Se completa hasta la sección 9 inclusive               & 22 de septiembre de 2026 \\ \hline
+2      & Se completa hasta la sección 9 inclusive               & 15 de septiembre de 2026 \\ \hline
 \fi
 \ifnum\revision>2
-3      & Se completa hasta la sección 12 inclusive              & 6 de octubre de 2026 \\ \hline
+3      & Se completa hasta la sección 12 inclusive              & 22 de septiembre de 2026 \\ \hline
 \fi
 \ifnum\revision>3
-4      & Se completa el plan	                                 & \fechaFinalPlanName \\ \hline
+4      & Se completa el plan	                                 & 29 de septiembre de 2026 \\ \hline
 \fi
 
 \end{tabularx}
@@ -108,7 +111,7 @@ Buenos Aires, \fechaInicioName
 
 \vspace{2cm}
 
-Por medio de la presente se acuerda con el \authorname\hspace{1px} que su Trabajo Final de la \degreename\hspace{1px} se titulará ``\ttitle'' y consistirá en el desarrollo de un modelo de aprendizaje profundo de bajo consumo de memoria, capaz de clasificar la respuesta al impulso del canal (CIR, del inglés \textit{channel impulse response}) de un enlace de banda ultraancha (UWB, del inglés \textit{ultra-wideband}) según exista o no línea de visión entre los dispositivos (LoS y NLoS, del inglés \textit{line-of-sight} y \textit{non-line-of-sight}), junto con el prototipo de firmware que ejecuta su inferencia sobre un SoC (del inglés \textit{system on chip}) basado en ARM Cortex-M33. El trabajo tendrá un presupuesto preliminar estimado de 600 horas y un costo estimado de \textcolor{red}{USD 15.000}, con fecha de inicio el \fechaInicioName\hspace{1px} y fecha de presentación pública el \fechaFinalName.
+Por medio de la presente se acuerda con el \authorname\hspace{1px} que su Trabajo Final de la \degreename\hspace{1px} se titulará ``\ttitle'' y consistirá en el desarrollo de un modelo de aprendizaje profundo de bajo consumo de memoria y de un prototipo de firmware que ejecutará su inferencia sobre un SoC (del inglés \textit{system on chip}) basado en ARM Cortex-M33. El modelo clasificará la respuesta al impulso del canal (CIR, del inglés \textit{channel impulse response}) de un enlace de banda ultraancha (UWB, del inglés \textit{ultra-wideband}) según exista o no línea de visión entre los dispositivos (LoS y NLoS, del inglés \textit{line-of-sight} y \textit{non-line-of-sight}). El trabajo tendrá un presupuesto preliminar estimado de 600 horas y un costo estimado de \textcolor{red}{USD 15.000}, con fecha de inicio el \fechaInicioName\hspace{1px} y fecha de presentación pública el \fechaFinalName.
 
 Se adjunta a esta acta la planificación inicial.
 
@@ -129,15 +132,15 @@ Se adjunta a esta acta la planificación inicial.
 \section{1. Descripción técnica-conceptual del proyecto a realizar}
 \label{sec:descripcion}
 
-Los transceptores UWB permiten medir distancias con una precisión del orden del centímetro y sostienen buena parte de los sistemas de localización en tiempo real (RTLS, del inglés \textit{real-time locating system}) que se despliegan hoy en logística, control de acceso y llave digital vehicular. Esa precisión se degrada de manera significativa cuando el trayecto directo entre los dos dispositivos se encuentra obstruido, condición conocida como NLoS. En esa situación el receptor identifica como primer camino una réplica reflejada de la señal y la distancia estimada resulta mayor que la real, con errores que pueden alcanzar varios decímetros. La detección confiable de la condición NLoS es, por lo tanto, la principal palanca disponible para mejorar la exactitud del \textit{ranging}.
+Los transceptores UWB permiten medir distancias con una precisión del orden del centímetro y sostienen buena parte de los sistemas de localización en tiempo real (RTLS, del inglés \textit{real-time locating system}) que se despliegan hoy en logística, control de acceso y llave digital vehicular. Esa precisión se degrada de manera significativa cuando el trayecto directo entre los dos dispositivos se encuentra obstruido, condición conocida como NLoS. En esa situación el receptor identifica como primer camino una réplica reflejada de la señal y la distancia estimada resulta mayor que la real, con errores que pueden alcanzar varios decímetros. La detección confiable de la condición NLoS es, por lo tanto, el mecanismo principal disponible para mejorar la exactitud del \textit{ranging}.
 
-En los productos actuales esa detección se resuelve mediante algoritmos de procesamiento digital de señales integrados en el propio chip, que aplican reglas deterministas sobre un conjunto reducido de métricas de canal, como la amplitud del primer camino o la potencia total recibida. El enfoque tiene la ventaja del determinismo y del bajo consumo, pero descarta la mayor parte de la información contenida en la respuesta al impulso del canal. En paralelo, la literatura reciente muestra que los modelos de aprendizaje profundo aplicados sobre la CIR completa alcanzan tasas de acierto muy superiores. Esos trabajos, entre ellos la arquitectura ADCNN-BiLSTM-Transformer publicada en \textit{IEEE Journals}, se ejecutan fuera del chip, sobre un procesador de propósito general, porque su tamaño excede ampliamente la memoria disponible en un transceptor UWB.
+En los productos actuales esa detección se resuelve mediante algoritmos de procesamiento digital de señales integrados en el propio chip, que aplican reglas deterministas sobre un conjunto reducido de métricas de canal, como la amplitud del primer camino o la potencia total recibida. El enfoque tiene la ventaja del determinismo y del bajo consumo, pero descarta la mayor parte de la información contenida en la respuesta al impulso del canal. En paralelo, la literatura reciente muestra que los modelos de aprendizaje profundo aplicados sobre la CIR completa alcanzan tasas de acierto muy superiores. Esos trabajos se ejecutan fuera del chip, sobre un procesador de propósito general, porque su tamaño previsiblemente excede la memoria disponible en un transceptor UWB. Un ejemplo representativo es la arquitectura ADCNN-BiLSTM-Transformer propuesta por Qi et al.\footnote{L.~Qi, Y.~Zhao, Q.~Guo, M.~Kaliuzhnyi y E.~Wang, ``Deep learning-based NLOS identification of UWB signals'', \textit{IEEE Signal Process. Lett.}, vol.~32, pp.~2394--2398, 2025, doi: \href{https://doi.org/10.1109/LSP.2025.3577127}{10.1109/LSP.2025.3577127}.}, que combina convoluciones dilatadas adaptativas, una red recurrente bidireccional de memoria de corto y largo plazo y un mecanismo de atención de tipo \textit{transformer}.
 
-El proyecto se ubica en ese espacio intermedio. Se propone desarrollar una red neuronal convolucional (CNN, del inglés \textit{convolutional neural network}) unidimensional de bajo perfil en memoria, cuantizado a enteros de 8 bits, que clasifique la CIR como LoS o NLoS con una exactitud comparable a la de los modelos publicados, pero con un tamaño compatible con la memoria de un dispositivo embebido. El entregable es un producto mínimo viable que demuestra la factibilidad de trasladar la inferencia al borde, como paso previo a su integración en un transceptor comercial de la familia NXP SR250 o NCJ29D6.
+El proyecto se ubica en ese espacio intermedio. Se propone desarrollar una red neuronal convolucional (CNN, del inglés \textit{convolutional neural network}) unidimensional de bajo perfil en memoria, cuantizada a enteros de 8 bits, que clasifique la CIR como LoS o NLoS con una exactitud comparable a la de los modelos publicados, pero con un tamaño compatible con la memoria de un dispositivo embebido. El entregable es un producto mínimo viable que demuestra la factibilidad de trasladar la inferencia al borde, como paso previo a su integración en un transceptor comercial de la familia NXP SR250 o NCJ29D6.
 
 El contexto es empresarial. El trabajo se realiza en MobileKnowledge, compañía especializada en tecnologías de conectividad de corto alcance y socia tecnológica de NXP Semiconductors. La empresa aporta el conocimiento de dominio en UWB y el acceso al hardware de evaluación. El proyecto no cuenta con financiamiento público ni privado específico. La documentación técnica, el código de ejemplo y las especificaciones de los transceptores de NXP que se emplean son de acceso público, de modo que ninguna restricción de confidencialidad recae sobre el material técnico del proyecto. La propiedad intelectual del modelo que se desarrolle corresponde a MobileKnowledge, por lo que la difusión de los resultados se acuerda con la empresa.
 
-La propuesta de valor se apoya en tres puntos. Primero, la solución opera sobre datos que el transceptor ya calcula, sin necesidad de sensores adicionales ni de cambios en el protocolo de \textit{ranging}. Segundo, al ejecutarse en el dispositivo elimina la latencia y el consumo asociados a enviar la CIR completa a un procesador externo, que por su longitud representa un volumen de datos considerable para un enlace embebido. Tercero, el modelo se diseña desde el inicio con un presupuesto de memoria explícito, criterio ausente en los trabajos académicos de referencia, que priorizan la exactitud sin restricciones de plataforma.
+La propuesta de valor se apoya en tres puntos. Primero, la solución opera sobre datos que el transceptor ya calcula, sin necesidad de sensores adicionales ni de cambios en el protocolo de \textit{ranging}. Segundo, al ejecutarse en el dispositivo, elimina la latencia y el consumo que implica enviar a un procesador externo la CIR completa, que por su longitud representa un volumen de datos considerable para un enlace embebido. Tercero, el modelo se diseña desde el inicio con un presupuesto de memoria explícito, criterio ausente en los trabajos académicos de referencia, que priorizan la exactitud sin restricciones de plataforma.
 
 En la figura \ref{fig:diagBloques} se presenta el diagrama en bloques del sistema. Se observan dos cadenas de procesamiento. La cadena superior corresponde al entorno de desarrollo, donde el conjunto de datos público se prepara, se emplea para entrenar la red convolucional, y el modelo resultante se cuantiza y se convierte en un arreglo de C que se enlaza con el firmware. La cadena inferior corresponde al sistema embebido: el transceptor UWB entrega la CIR de cada intercambio de \textit{ranging}, el firmware la acondiciona, el motor de inferencia produce la decisión entre LoS y NLoS, y esa decisión se utiliza para ponderar o descartar la medición de distancia antes de entregarla a la aplicación de localización.
 
@@ -235,7 +238,7 @@ A continuación se describen las características de cada interesado que resulta
 \section{3. Propósito del proyecto}
 \label{sec:proposito}
 
-El propósito de este proyecto es demostrar que la detección de la condición NLoS en enlaces UWB puede resolverse con un modelo de aprendizaje profundo lo suficientemente pequeño como para ejecutarse dentro de un dispositivo embebido, y no solo en un procesador externo, de manera de mejorar la exactitud de la medición de distancia sin agregar hardware, sin modificar el protocolo de \textit{ranging} y sin transferir la respuesta al impulso del canal fuera del dispositivo.
+El propósito de este proyecto es demostrar que la detección de la condición NLoS en enlaces UWB puede resolverse con un modelo de aprendizaje profundo lo suficientemente pequeño como para ejecutarse dentro de un dispositivo embebido, y no solo en un procesador externo, con el fin de mejorar la exactitud de la medición de distancia sin agregar hardware, sin modificar el protocolo de \textit{ranging} y sin transferir la respuesta al impulso del canal fuera del dispositivo.
 
 \section{4. Alcance del proyecto}
 \label{sec:alcance}
@@ -257,6 +260,7 @@ El proyecto incluye:
 	\item El desarrollo del firmware de prueba que ejecuta la inferencia sobre un SoC basado en ARM Cortex-M33, con aceleración mediante CMSIS-NN (Common Microcontroller Software Interface Standard, Neural Networks), la biblioteca de núcleos de redes neuronales que ARM optimiza para esos procesadores.
 	\item La medición sobre el hardware de evaluación de la memoria de programa ocupada, la memoria de trabajo del intérprete, la latencia de inferencia y la exactitud alcanzada.
 	\item La comparación de los resultados del modelo contra el criterio determinista de referencia disponible en el transceptor.
+	\item La documentación técnica interna para MobileKnowledge, que comprende la ficha técnica del modelo y la guía de integración en el firmware.
 	\item La elaboración del informe de avance y de la memoria técnica.
 \end{itemize}
 
@@ -289,7 +293,7 @@ Para el desarrollo del presente proyecto se supone que:
 \section{6. Product Backlog}
 \label{sec:backlog}
 
-El Product Backlog se organiza en cuatro épicas que se corresponden con los bloques funcionales del sistema descrito en la sección \ref{sec:descripcion}: la obtención y comprensión de los datos, su preparación, el modelado y su optimización, y el despliegue sobre el sistema embebido.
+El Product Backlog se organiza en cuatro épicas que se corresponden con los bloques funcionales del sistema descrito en la sección \ref{sec:descripcion}: la obtención y comprensión de los datos, su preparación, el modelado y su optimización, y el despliegue sobre el sistema embebido. Las actividades de documentación, el informe de avance, la memoria técnica y la defensa no forman parte del backlog: se planifican como tareas de los sprints en la sección~\ref{sec:sprints}.
 
 \textbf{Criterio de cálculo de los Story Points.} Cada historia de usuario se puntúa en tres dimensiones, con valores enteros de 1 a 5:
 
@@ -301,18 +305,28 @@ El Product Backlog se organiza en cuatro épicas que se corresponden con los blo
 
 La suma de las tres dimensiones se redondea al valor superior más cercano de la serie de Fibonacci (1, 2, 3, 5, 8, 13, 21, 34). Por ejemplo, una historia que suma 12 puntos recibe 13 Story Points. Los Story Points expresan el tamaño relativo de una historia frente a las demás y no se equiparan con horas de trabajo.
 
+\textbf{Criterio de prioridad.} Cada historia de usuario recibe una de tres prioridades:
+
+\begin{itemize}
+	\item Alta: sin ella el prototipo comprometido en el acta de constitución no puede construirse o no puede verificarse, o bien sostiene un plan de mitigación de la sección~\ref{sec:riesgos}.
+	\item Media: mejora la calidad o la solidez del resultado y, ante un atraso, admite reducir su alcance sin comprometer el entregable.
+	\item Baja: es opcional y se ejecuta solo si el cronograma lo permite.
+\end{itemize}
+
+El orden de ejecución no sigue estrictamente la prioridad, porque dos historias de prioridad media producen insumos que las siguientes necesitan: HU2 define el esquema de partición con el que se evalúan los modelos, y HU4 fija el ancho de ventana con el que se entrenan. En ambos casos, reducir el alcance significa acotar el análisis, no omitir el insumo.
+
 \subsection{Épica 1: ingesta y comprensión de los datos}
 
 \begin{itemize}
 	\item \textbf{HU1.} Como desarrollador de modelos, quiero disponer de un flujo reproducible que convierta el conjunto de datos eWINE en tensores de CIR etiquetados, para entrenar modelos sin repetir el trabajo de preparación en cada experimento. Prioridad alta.
-	\item \textbf{HU2.} Como desarrollador de modelos, quiero un análisis exploratorio de las CIR discriminado por clase y por entorno, para identificar sesgos de distribución y definir un esquema de partición que permita medir la generalización. Prioridad alta.
+	\item \textbf{HU2.} Como desarrollador de modelos, quiero un análisis exploratorio de las CIR discriminado por clase y por entorno, para identificar sesgos de distribución y definir un esquema de partición que permita medir la generalización. Prioridad media.
 \end{itemize}
 
 \subsection{Épica 2: preprocesamiento y representación de la CIR}
 
 \begin{itemize}
 	\item \textbf{HU3.} Como desarrollador de modelos, quiero alinear cada CIR respecto de su primer camino detectado y normalizar su amplitud, para que el modelo aprenda la forma del perfil de multitrayecto y no la posición absoluta de la ventana de captura. Prioridad alta.
-	\item \textbf{HU4.} Como desarrollador de modelos, quiero reducir la ventana de CIR al menor número de muestras que preserve la exactitud, para acotar la memoria de trabajo que el modelo requiere en el dispositivo. Prioridad alta.
+	\item \textbf{HU4.} Como desarrollador de modelos, quiero reducir la ventana de CIR al menor número de muestras que preserve la exactitud, para acotar la memoria de trabajo que el modelo requiere en el dispositivo. Prioridad media.
 \end{itemize}
 
 \subsection{Épica 3: modelado y optimización para el sistema embebido}
@@ -328,7 +342,7 @@ La suma de las tres dimensiones se redondea al valor superior más cercano de la
 \begin{itemize}
 	\item \textbf{HU8.} Como desarrollador de firmware, quiero ejecutar el modelo cuantizado sobre el SoC basado en Cortex-M33, para verificar que la inferencia entra en la memoria disponible y responde dentro del tiempo requerido. Prioridad alta.
 	\item \textbf{HU9.} Como desarrollador de firmware, quiero medir y comparar la memoria ocupada, la latencia y la exactitud entre la computadora personal y el dispositivo, para demostrar que la degradación introducida por la cuantización se mantiene acotada. Prioridad alta.
-	\item \textbf{HU10.} Como responsable técnico del producto, quiero comparar el detector basado en aprendizaje profundo contra el criterio determinista de referencia, para cuantificar la mejora que aporta la solución propuesta. Prioridad media. Historia opcional.
+	\item \textbf{HU10.} Como responsable técnico del producto, quiero comparar el detector basado en aprendizaje profundo contra el criterio determinista de referencia, para cuantificar la mejora que aporta la solución propuesta. Prioridad baja. Historia opcional.
 \end{itemize}
 
 En la tabla \ref{tab:storypoints} se presenta la ponderación de cada historia de usuario.
@@ -342,15 +356,15 @@ En la tabla \ref{tab:storypoints} se presenta la ponderación de cada historia d
 \rowcolor[HTML]{C0C0C0}
 HU & Épica & D & C & I & Suma & SP & Prioridad \\ \hline
 HU1 & Ingesta y comprensión de los datos & 2 & 2 & 1 & 5 & 5 & Alta \\ \hline
-HU2 & Ingesta y comprensión de los datos & 2 & 1 & 1 & 4 & 5 & Alta \\ \hline
+HU2 & Ingesta y comprensión de los datos & 2 & 1 & 1 & 4 & 5 & Media \\ \hline
 HU3 & Preprocesamiento y representación & 3 & 3 & 2 & 8 & 8 & Alta \\ \hline
-HU4 & Preprocesamiento y representación & 3 & 2 & 2 & 7 & 8 & Alta \\ \hline
+HU4 & Preprocesamiento y representación & 3 & 2 & 2 & 7 & 8 & Media \\ \hline
 HU5 & Modelado y optimización & 3 & 3 & 2 & 8 & 8 & Alta \\ \hline
 HU6 & Modelado y optimización & 4 & 4 & 4 & 12 & 13 & Alta \\ \hline
 HU7 & Modelado y optimización & 3 & 4 & 4 & 11 & 13 & Alta \\ \hline
 HU8 & Despliegue y validación & 4 & 4 & 5 & 13 & 13 & Alta \\ \hline
 HU9 & Despliegue y validación & 3 & 2 & 2 & 7 & 8 & Alta \\ \hline
-HU10 & Despliegue y validación & 2 & 3 & 3 & 8 & 8 & Media (opcional) \\ \hline
+HU10 & Despliegue y validación & 2 & 3 & 3 & 8 & 8 & Baja (opcional) \\ \hline
 \rowcolor[HTML]{EFEFEF}
 \multicolumn{6}{|r|}{Total} & 89 & \\ \hline
 \end{tabularx}
@@ -401,9 +415,9 @@ HU10 & Despliegue y validación & 2 & 3 & 3 & 8 & 8 & Media (opcional) \\ \hline
 
 \textbf{Criterios de aceptación de HU5}
 \begin{itemize}
-	\item La red convolucional alcanza un valor de F1 igual o superior a 0,90 sobre el conjunto de prueba con partición estratificada.
+	\item La red convolucional alcanza un valor de F1 igual o superior a 0,88 sobre el conjunto de prueba con partición estratificada.
 	\item Se reportan exactitud, precisión, exhaustividad, F1, área bajo la curva ROC (del inglés \textit{receiver operating characteristic}) y matriz de confusión.
-	\item La red supera en al menos 5 puntos de F1 a los dos modelos de comparación entrenados sobre las métricas de canal.
+	\item La red supera en F1 a los dos modelos de comparación entrenados sobre las métricas de canal.
 	\item Los resultados se reproducen a partir del registro de experimentos, que conserva la configuración, la semilla y los pesos de cada corrida.
 \end{itemize}
 
@@ -461,10 +475,14 @@ El objetivo es aumentar la exactitud de la medición de distancia en enlaces UWB
 Se adoptan tres métricas de éxito conjuntas, que deben cumplirse de manera simultánea:
 
 \begin{itemize}
-	\item Un valor de F1 igual o superior a 0,90 en la clasificación entre LoS y NLoS sobre el conjunto de prueba.
+	\item Un valor de F1 igual o superior a 0,85 para el modelo desplegado, en la clasificación entre LoS y NLoS sobre el conjunto de prueba.
 	\item Una ocupación de memoria de programa igual o menor a 64 kB para el modelo cuantizado.
 	\item Una latencia de inferencia mediana igual o menor a 10 ms sobre el SoC basado en Cortex-M33.
 \end{itemize}
+
+El umbral de F1 se fija en relación con el estado del arte. Qi et al.\footnote{L.~Qi, Y.~Zhao, Q.~Guo, M.~Kaliuzhnyi y E.~Wang, ``Deep learning-based NLOS identification of UWB signals'', \textit{IEEE Signal Process. Lett.}, vol.~32, pp.~2394--2398, 2025, doi: \href{https://doi.org/10.1109/LSP.2025.3577127}{10.1109/LSP.2025.3577127}.} reportan una exactitud de 92,19~\% sobre el mismo conjunto de datos, con un modelo que combina capas convolucionales, una capa recurrente y un mecanismo de atención, concebido para ejecutarse fuera del chip. El presente proyecto persigue un modelo restringido a 64 kB y cuantizado a enteros de 8 bits, condiciones que previsiblemente implican una pérdida de exactitud. Por ese motivo el objetivo no es igualar ese resultado, sino acotar la brecha: un F1 de 0,85 equivale a una diferencia de alrededor de siete puntos porcentuales, que es el costo que se acepta a cambio de habilitar la inferencia dentro del dispositivo. Como el conjunto de datos está balanceado entre clases, F1 y exactitud toman valores próximos, lo que vuelve razonable la comparación.
+
+El umbral se traslada a los criterios de aceptación de manera encadenada. La poda admite una pérdida de hasta 1 punto porcentual de F1 (HU6) y la cuantización hasta 2 puntos (HU7), de modo que la red de referencia debe alcanzar un F1 de al menos 0,88 (HU5) para que el modelo desplegado conserve el 0,85 aun cuando ambas pérdidas se produzcan.
 
 \subsection{Comprensión de los datos}
 
@@ -514,7 +532,7 @@ El despliegue es local y se realiza dentro del dispositivo, sin ningún componen
 \section{9. Desglose del trabajo en tareas}
 \label{sec:wbs}
 
-En la tabla \ref{tab:tareas} se descompone cada historia de usuario en tareas técnicas concretas, con su estimación horaria y su prioridad relativa. La estimación considera la complejidad técnica, el nivel de incertidumbre y la experiencia previa del autor, e incluye el tiempo de prueba y de documentación de cada tarea.
+En la tabla \ref{tab:tareas} se descompone cada historia de usuario en tareas técnicas concretas, con su estimación horaria y su prioridad relativa. La prioridad de una tarea se asigna según su impacto en los criterios de aceptación y no supera la de la historia a la que pertenece. La estimación considera la complejidad técnica, el nivel de incertidumbre y la experiencia previa del autor, e incluye el tiempo de prueba y de documentación de cada tarea.
 
 El total de esta sección asciende a 174 horas. Las horas restantes del proyecto corresponden a los ciclos de iteración, depuración, campañas de medición y actividades no técnicas que se detallan en la sección \ref{sec:sprints}.
 
@@ -532,15 +550,15 @@ HU & Tarea técnica & Estimación & Prioridad \\ \hline
 HU1 & Descargar y versionar de manera local el conjunto de datos eWINE, y verificar la integridad de los siete subconjuntos & 4 h & Alta \\ \hline
 HU1 & Implementar el lector que construye el arreglo de CIR y el vector de etiquetas a partir de los archivos de origen & 8 h & Alta \\ \hline
 HU1 & Implementar la partición estratificada reproducible por semilla en entrenamiento, validación y prueba & 6 h & Alta \\ \hline
-HU2 & Calcular los estadísticos descriptivos de las métricas de canal por clase y por entorno & 5 h & Alta \\ \hline
+HU2 & Calcular los estadísticos descriptivos de las métricas de canal por clase y por entorno & 5 h & Media \\ \hline
 HU2 & Graficar la CIR promedio y sus bandas de percentiles por clase para cada uno de los siete entornos & 6 h & Media \\ \hline
 HU2 & Cuantificar el desbalance entre entornos y documentar los sesgos detectados & 4 h & Media \\ \hline
 HU3 & Implementar la detección del índice del primer camino y la alineación de la CIR respecto de ese índice & 8 h & Alta \\ \hline
 HU3 & Implementar la normalización por energía y la normalización por amplitud máxima & 5 h & Alta \\ \hline
 HU3 & Comparar el efecto de cada normalización sobre la exactitud de un clasificador de referencia & 6 h & Alta \\ \hline
-HU4 & Parametrizar el ancho de la ventana de CIR alrededor del primer camino & 4 h & Alta \\ \hline
-HU4 & Ejecutar el barrido de anchos de ventana entre 32 y 256 muestras y registrar exactitud y memoria & 8 h & Alta \\ \hline
-HU4 & Seleccionar el ancho de ventana y documentar el compromiso entre exactitud y memoria & 3 h & Alta \\ \hline
+HU4 & Parametrizar el ancho de la ventana de CIR alrededor del primer camino & 4 h & Media \\ \hline
+HU4 & Ejecutar el barrido de anchos de ventana entre 32 y 256 muestras y registrar exactitud y memoria & 8 h & Media \\ \hline
+HU4 & Seleccionar el ancho de ventana y documentar el compromiso entre exactitud y memoria & 3 h & Media \\ \hline
 HU5 & Implementar la red convolucional unidimensional de referencia con bloques convolucionales y agrupamiento global & 8 h & Alta \\ \hline
 HU5 & Configurar el ciclo de entrenamiento con detención temprana y registro de experimentos & 6 h & Alta \\ \hline
 HU5 & Entrenar los modelos de comparación de regresión logística y máquina de vectores de soporte sobre las métricas de canal & 6 h & Media \\ \hline
@@ -556,8 +574,8 @@ HU8 & Implementar el banco de pruebas que inyecta CIR almacenadas y devuelve la 
 HU9 & Medir la memoria de programa y la memoria de trabajo a partir del mapa de memoria del enlazador & 4 h & Alta \\ \hline
 HU9 & Medir la latencia de inferencia con el contador de ciclos del procesador sobre 1000 repeticiones & 5 h & Alta \\ \hline
 HU9 & Comparar las salidas del modelo en la computadora personal y en el dispositivo sobre el conjunto de prueba completo & 6 h & Alta \\ \hline
-HU10 & Extraer el indicador determinista de NLoS de referencia para el conjunto de prueba & 6 h & Media \\ \hline
-HU10 & Construir la comparación de matrices de confusión y curvas ROC entre el criterio determinista y el modelo & 6 h & Media \\ \hline
+HU10 & Extraer el indicador determinista de NLoS de referencia para el conjunto de prueba & 6 h & Baja \\ \hline
+HU10 & Construir la comparación de matrices de confusión y curvas ROC entre el criterio determinista y el modelo & 6 h & Baja \\ \hline
 \rowcolor[HTML]{EFEFEF}
 \multicolumn{2}{|r|}{Total} & 174 h & \\ \hline
 \end{longtable}
@@ -567,9 +585,11 @@ HU10 & Construir la comparación de matrices de confusión y curvas ROC entre el
 \section{10. Planificación de Sprints}
 \label{sec:sprints}
 
-El proyecto se organiza en doce sprints. El Sprint 0 acompaña la cursada de Gestión de Proyectos y se dedica a la planificación. Los sprints 1 a 10 son técnicos, tienen una duración de tres semanas cada uno y una carga de 48 horas. El Sprint 11 se reserva por completo a la elaboración de la memoria técnica y a la preparación de la defensa, en coincidencia con el quinto bimestre del posgrado. A esos sprints se suman dos actividades transversales que atraviesan todo el proyecto.
+El proyecto se organiza en doce sprints. El Sprint 0 acompaña la cursada de Gestión de Proyectos y se dedica a la planificación. Los sprints 1 a 10 son técnicos, tienen una duración de tres semanas cada uno y una carga de 48 horas. El Sprint 11 ocupa, de manera estimada, los dos últimos bimestres del posgrado y comprende las actividades de los talleres de Trabajo Final A y B (TTFA y TTFB): en el primero se redactan los tres primeros capítulos de la memoria técnica, y en el segundo, los dos restantes junto con la preparación de la defensa. El Sprint 0 y el Sprint 11 exceden la duración de tres semanas de los sprints técnicos porque siguen el calendario de las asignaturas del posgrado. A esos sprints se suman dos actividades transversales que atraviesan todo el proyecto, entre ellas el informe de avance, que se entrega antes del TTFA.
 
-\textbf{Jornada de trabajo adoptada.} Durante los sprints activos se planifican 16 horas semanales, distribuidas en 3 horas de lunes a viernes y 1 hora los sábados. El cronograma incorpora un receso de cuatro semanas entre diciembre y enero, y un período de contingencia de ocho semanas entre el cierre técnico y el inicio de la memoria. Sobre el calendario completo de 64 semanas, la dedicación promedio resulta de unas 9,4 horas semanales.
+La documentación técnica interna para MobileKnowledge se produce de manera incremental: cada sprint técnico incluye una tarea que documenta lo realizado, y los sprints 9 y 10 cierran con la guía de integración del modelo en el firmware y con la ficha técnica del modelo. Esas tareas nutren a su vez los capítulos de diseño y de resultados de la memoria.
+
+\textbf{Jornada de trabajo adoptada.} Durante los sprints activos se planifican 16 horas semanales, distribuidas en 3 horas de lunes a viernes y 1 hora los sábados. El cronograma incorpora un receso de cuatro semanas entre diciembre y enero, y un período de contingencia de dos semanas entre el cierre técnico y el inicio del TTFA. A esa holgura se suma la baja carga del Sprint 11, de alrededor de cuatro horas semanales, que durante la redacción de los capítulos introductorios deja capacidad para absorber desvíos del desarrollo técnico. Sobre el calendario completo de 64 semanas, la dedicación promedio resulta de unas 9,4 horas semanales.
 
 \textbf{Conversión de Story Points a horas.} A modo de referencia se adopta la equivalencia aproximada de 1 Story Point cada 2 horas de trabajo. La equivalencia se emplea solo como control de coherencia entre la ponderación relativa de las historias y la carga asignada a cada sprint, y no reemplaza la estimación horaria de las tareas.
 
@@ -653,7 +673,7 @@ Sprint 9 & HU8 & Implementar el banco de pruebas que inyecta CIR y responde por 
 Sprint 9 & HU8 & Configurar la cadena de compilación y de depuración de la placa de evaluación & 8 h & Alumno & 0 \% \\ \hline
 Sprint 9 & HU8 & Resolver los errores de asignación de la memoria de trabajo del intérprete & 8 h & Alumno & 0 \% \\ \hline
 Sprint 9 & HU8 & Implementar la carga de vectores de prueba desde memoria no volátil & 8 h & Alumno & 0 \% \\ \hline
-Sprint 9 & HU8 & Documentar el procedimiento de compilación y de grabado & 4 h & Alumno & 0 \% \\ \hline
+Sprint 9 & HU8 & Redactar la guía interna de integración del modelo en el firmware & 4 h & Alumno & 0 \% \\ \hline
 Sprint 10 & HU9 & Medir la memoria de programa y la memoria de trabajo ocupadas & 4 h & Alumno & 0 \% \\ \hline
 Sprint 10 & HU9 & Medir la latencia de inferencia sobre 1000 repeticiones & 5 h & Alumno & 0 \% \\ \hline
 Sprint 10 & HU9 & Comparar las salidas en la computadora personal y en el dispositivo & 6 h & Alumno & 0 \% \\ \hline
@@ -661,13 +681,15 @@ Sprint 10 & HU9 & Automatizar la campaña de medición sobre el conjunto de prue
 Sprint 10 & HU9 & Analizar las discrepancias entre ambas plataformas de ejecución & 8 h & Alumno & 0 \% \\ \hline
 Sprint 10 & HU10 & Extraer el indicador determinista de referencia para el conjunto de prueba & 6 h & Alumno & 0 \% \\ \hline
 Sprint 10 & HU10 & Construir la comparación entre el criterio determinista y el modelo & 6 h & Alumno & 0 \% \\ \hline
-Sprint 10 & HU9 & Consolidar la tabla final de resultados del prototipo & 5 h & Alumno & 0 \% \\ \hline
-Sprint 11 & Memoria & Elaborar la estructura y el índice de la memoria técnica & 6 h & Alumno & 0 \% \\ \hline
-Sprint 11 & Memoria & Redactar los capítulos de introducción, estado del arte y metodología & 18 h & Alumno & 0 \% \\ \hline
-Sprint 11 & Memoria & Redactar los capítulos de desarrollo, resultados y conclusiones & 22 h & Alumno & 0 \% \\ \hline
-Sprint 11 & Memoria & Revisar, corregir y maquetar la versión final de la memoria & 9 h & Alumno & 0 \% \\ \hline
-Sprint 11 & Defensa & Preparar la presentación de la defensa & 9 h & Alumno & 0 \% \\ \hline
-Sprint 11 & Defensa & Ensayar la defensa y ajustar los tiempos de exposición & 6 h & Alumno & 0 \% \\ \hline
+Sprint 10 & HU9 & Elaborar la ficha técnica del modelo con los resultados del prototipo & 5 h & Alumno & 0 \% \\ \hline
+Sprint 11 & TTFA & Redactar el capítulo 1 de la memoria, introducción general & 8 h & Alumno & 0 \% \\ \hline
+Sprint 11 & TTFA & Redactar el capítulo 2 de la memoria, introducción específica & 10 h & Alumno & 0 \% \\ \hline
+Sprint 11 & TTFA & Redactar el capítulo 3 de la memoria, diseño e implementación & 14 h & Alumno & 0 \% \\ \hline
+Sprint 11 & TTFB & Redactar el capítulo 4 de la memoria, ensayos y resultados & 12 h & Alumno & 0 \% \\ \hline
+Sprint 11 & TTFB & Redactar el capítulo 5 de la memoria, conclusiones & 5 h & Alumno & 0 \% \\ \hline
+Sprint 11 & TTFB & Revisar, corregir y maquetar la versión final de la memoria & 6 h & Alumno & 0 \% \\ \hline
+Sprint 11 & TTFB & Preparar la presentación de la defensa & 9 h & Alumno & 0 \% \\ \hline
+Sprint 11 & TTFB & Ensayar la defensa y ajustar los tiempos de exposición & 6 h & Alumno & 0 \% \\ \hline
 Transversal & Seguimiento & Sostener seis reuniones de revisión con el cliente y el director & 12 h & Alumno & 0 \% \\ \hline
 Transversal & Documentación & Redactar el informe de avance & 8 h & Alumno & 0 \% \\ \hline
 \rowcolor[HTML]{EFEFEF}
@@ -686,7 +708,9 @@ En la tabla \ref{tab:resumenSprints} se resume la distribución de la carga hora
 Bloque & Sprints & Semanas & Horas \\ \hline
 Planificación del proyecto & Sprint 0 & 10 & 30 h \\ \hline
 Desarrollo técnico & Sprints 1 a 10 & 30 & 480 h \\ \hline
-Memoria técnica y defensa & Sprint 11 & 12 & 70 h \\ \hline
+Receso programado & - & 4 & 0 h \\ \hline
+Contingencia & - & 2 & 0 h \\ \hline
+Memoria técnica y defensa (TTFA y TTFB) & Sprint 11 & 18 & 70 h \\ \hline
 Actividades transversales & Transversal & - & 20 h \\ \hline
 \rowcolor[HTML]{EFEFEF}
 Total & 12 sprints & 64 & 600 h \\ \hline
@@ -751,9 +775,9 @@ En la figura \ref{fig:gantt} se presenta el diagrama de Gantt del proyecto, cons
 \ganttbar{S8. HU7}{36}{38} \\
 \ganttbar{S9. HU8}{39}{41} \\
 \ganttbar{S10. HU9/10}{42}{44} \\
-\ganttbar[bar/.append style={fill=colorPausa}]{Buffer}{45}{52} \\
-\ganttbar[bar/.append style={fill=colorNoTecnico}]{S11. Memoria}{53}{61} \\
-\ganttbar[bar/.append style={fill=colorNoTecnico}]{S11. Defensa}{62}{64} \\
+\ganttbar[bar/.append style={fill=colorPausa}]{Buffer}{45}{46} \\
+\ganttbar[bar/.append style={fill=colorNoTecnico}]{S11. TTFA}{47}{55} \\
+\ganttbar[bar/.append style={fill=colorNoTecnico}]{S11. TTFB}{56}{64} \\
 
 \ganttmilestone{H1. Plan}{10} \\
 \ganttmilestone{H2. Avance}{35} \\
@@ -766,7 +790,7 @@ En la figura \ref{fig:gantt} se presenta el diagrama de Gantt del proyecto, cons
 \label{fig:gantt}
 \end{figure}
 
-El cronograma cubre la totalidad de las 600 horas planificadas y finaliza en la fecha de la defensa pública. El período de contingencia de ocho semanas absorbe los desvíos que se produzcan durante los sprints técnicos, en particular los asociados a la etapa de despliegue, que concentra la mayor incertidumbre. El quinto bimestre completo queda reservado a la elaboración de la memoria técnica.
+El cronograma cubre la totalidad de las 600 horas planificadas y finaliza en la fecha de la defensa pública. Los desvíos de los sprints técnicos se absorben en el período de contingencia de dos semanas y en la capacidad libre que deja la baja carga del TTFA. La etapa de despliegue es la que concentra la mayor incertidumbre, y es también la inmediatamente anterior a ese margen. El TTFB, que coincide con el quinto bimestre, queda reservado a la finalización de la memoria técnica y a la preparación de la defensa.
 \else\input{plantilla/11-diagrama-gantt}\fi
 
 \ifnum\revision>2
@@ -877,7 +901,7 @@ R1. Las trazas de origen no transfieren al transceptor de destino & 8 & 6 & 48 &
 R2. El modelo cuantizado excede la memoria disponible & 7 & 5 & 35 & 5 & 2 & 10 \\ \hline
 R3. Falta de disponibilidad de la placa de evaluación & 9 & 2 & 18 & & & \\ \hline
 R4. Degradación excesiva de la exactitud por cuantización & 6 & 5 & 30 & & & \\ \hline
-R5. Reducción sostenida de la disponibilidad horaria & 7 & 7 & 49 & 5 & 4 & 20 \\ \hline
+R5. Reducción sostenida de la disponibilidad horaria & 7 & 7 & 49 & 6 & 4 & 24 \\ \hline
 R6. Cambio de prioridades comerciales de la empresa & 6 & 4 & 24 & & & \\ \hline
 R7. Indisponibilidad del conjunto de datos público & 5 & 2 & 10 & & & \\ \hline
 \end{tabularx}%
@@ -902,9 +926,9 @@ Nota: los valores marcados con asterisco corresponden a la situación posterior 
 \end{itemize}
 
 
-\textbf{Riesgo 5.} Se adopta una jornada fija y acotada de 16 horas semanales durante los sprints activos, valor sostenible en paralelo con la actividad profesional. El cronograma incorpora un receso programado de cuatro semanas y un período de contingencia de ocho semanas previo al inicio de la memoria técnica. La historia de usuario HU10 se declara opcional, de manera que su postergación libera carga sin afectar el cumplimiento del alcance comprometido. El avance se controla al cierre de cada sprint mediante el porcentaje de completitud de la tabla \ref{tab:sprints}.
+\textbf{Riesgo 5.} Se adopta una jornada fija y acotada de 16 horas semanales durante los sprints activos, valor sostenible en paralelo con la actividad profesional. El cronograma incorpora un receso programado de cuatro semanas y un período de contingencia de dos semanas previo al TTFA, al que se suma la capacidad libre que deja la baja carga de redacción durante los capítulos introductorios de la memoria. La historia de usuario HU10 se declara opcional y las historias HU2 y HU4, de prioridad media, admiten reducir su alcance, de manera que ante un atraso se libera carga sin afectar el entregable comprometido. El avance se controla al cierre de cada sprint mediante el porcentaje de completitud de la tabla \ref{tab:sprints}.
 \begin{itemize}
-	\item Severidad (S*): 5. Con ocho semanas de contingencia y una historia declarada opcional, un desvío de magnitud moderada se absorbe dentro del cronograma sin desplazar la fecha de la defensa.
+	\item Severidad (S*): 6. La contingencia exclusiva es de dos semanas, pero la capacidad libre del TTFA, una historia opcional y dos de prioridad media que admiten reducir su alcance permiten absorber un desvío de magnitud moderada sin desplazar la fecha de la defensa. Un desvío mayor comprometería la redacción del capítulo de diseño e implementación, que depende de que el desarrollo técnico esté cerrado.
 	\item Probabilidad de ocurrencia (O*): 4. La aparición de períodos de sobrecarga laboral no se elimina, pero una jornada planificada por debajo del máximo disponible reduce la probabilidad de que esa sobrecarga se traduzca en un atraso efectivo.
 \end{itemize}
 \else\input{plantilla/13-gestion-riesgos}\fi
@@ -935,7 +959,7 @@ En la tabla \ref{tab:sprintreview} se proyecta la revisión de cuatro historias 
 \multirow{-2}{=}{HU1 \newline Sprint 1} & Implementar la partición estratificada reproducible & \multirow{-2}{=}{Flujo de datos versionado y particiones publicadas} & \multirow{-2}{=}{Las pruebas unitarias pasan y dos ejecuciones con la misma semilla producen particiones idénticas} & \multirow{-2}{=}{Diferencias de formato entre los siete subconjuntos de origen} \\
 \hline
                       & Implementar la red convolucional de referencia & & & \\ \cline{2-2}
-\multirow{-2}{=}{HU5 \newline Sprint 5} & Evaluar con exclusión de un entorno completo & \multirow{-2}{=}{Modelo de línea base con su informe de métricas} & \multirow{-2}{=}{F1 igual o superior a 0,90 en el conjunto de prueba y superioridad frente a los modelos de comparación} & \multirow{-2}{=}{El desempeño con exclusión de entorno puede resultar sensiblemente menor} \\
+\multirow{-2}{=}{HU5 \newline Sprint 5} & Evaluar con exclusión de un entorno completo & \multirow{-2}{=}{Modelo de línea base con su informe de métricas} & \multirow{-2}{=}{F1 igual o superior a 0,88 en el conjunto de prueba y superioridad frente a los modelos de comparación} & \multirow{-2}{=}{El desempeño con exclusión de entorno puede resultar sensiblemente menor} \\
 \hline
                       & Aplicar la cuantización a enteros de 8 bits & & & \\ \cline{2-2}
 \multirow{-2}{=}{HU7 \newline Sprint 8} & Verificar la compatibilidad de los operadores & \multirow{-2}{=}{Modelo cuantizado y su informe de verificación} & \multirow{-2}{=}{El modelo ocupa 64 kB o menos, pierde menos de 2 puntos de F1 y todos sus operadores están soportados} & \multirow{-2}{=}{Riesgo R4: la degradación puede exigir entrenamiento consciente de la cuantización} \\
