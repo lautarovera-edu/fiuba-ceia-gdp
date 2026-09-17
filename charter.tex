@@ -246,7 +246,7 @@ El propósito de este proyecto es demostrar que la detección de la condición N
 El proyecto incluye:
 
 \begin{itemize}
-	\item La construcción de un flujo reproducible de ingesta del conjunto de datos público eWINE, con particiones versionadas para entrenamiento, validación y prueba.
+	\item La construcción de un flujo reproducible de ingesta del conjunto de datos público eWINE\footnote{Conjunto de datos \texttt{UWB-LOS-NLOS-Data-Set}, SensorLab, Jožef Stefan Institute, 2017, bajo licencia CC BY 4.0. Disponible en \href{https://github.com/ewine-project/UWB-LOS-NLOS-Data-Set}{github.com/ewine-project/UWB-LOS-NLOS-Data-Set}. Los autores solicitan citar: K.~Bregar, A.~Hrovat y M.~Mohorčič, ``NLOS channel detection with multilayer perceptron in low-rate personal area networks for indoor localization accuracy improvement'', en \textit{Proc. 8th Jožef Stefan International Postgraduate School Students' Conference}, Liubliana, Eslovenia, 2016.}, con particiones versionadas para entrenamiento, validación y prueba.
 	\item El análisis exploratorio de las respuestas al impulso del canal, discriminado por clase y por entorno de medición, y la documentación de los sesgos detectados.
 	\item El diseño e implementación del preprocesamiento de la CIR, que comprende:
 		\begin{itemize}
@@ -256,7 +256,7 @@ El proyecto incluye:
 		\end{itemize}
 	\item El entrenamiento de una red convolucional unidimensional de referencia y de dos modelos de comparación clásicos sobre las métricas de canal.
 	\item La exploración de arquitecturas sujeta a un presupuesto de memoria explícito, con poda estructurada del modelo seleccionado.
-	\item La cuantización del modelo a enteros de 8 bits y la verificación de compatibilidad con el conjunto de operadores de LiteRT for Microcontrollers, denominado TensorFlow Lite for Microcontrollers hasta su cambio de marca.
+	\item La cuantización del modelo a enteros de 8 bits, la verificación de que sus operadores estén implementados en LiteRT for Microcontrollers, denominado TensorFlow Lite for Microcontrollers hasta su cambio de marca, y la comprobación de que los de mayor cómputo cuenten con núcleo optimizado en CMSIS-NN.
 	\item El desarrollo del firmware de prueba que ejecuta la inferencia sobre un SoC basado en ARM Cortex-M33, con aceleración mediante CMSIS-NN (Common Microcontroller Software Interface Standard, Neural Networks), la biblioteca de núcleos de redes neuronales que ARM optimiza para esos procesadores.
 	\item La medición sobre el hardware de evaluación de la memoria de programa ocupada, la memoria de trabajo del intérprete, la latencia de inferencia y la exactitud alcanzada.
 	\item La comparación de los resultados del modelo contra el criterio determinista de referencia disponible en el transceptor.
@@ -340,7 +340,7 @@ El orden de ejecución no sigue estrictamente la prioridad, porque dos historias
 \subsection{Épica 4: despliegue y validación sobre el sistema embebido}
 
 \begin{itemize}
-	\item \textbf{HU8.} Como desarrollador de firmware, quiero ejecutar el modelo cuantizado sobre el SoC basado en Cortex-M33, para verificar que la inferencia entra en la memoria disponible y responde dentro del tiempo requerido. Prioridad alta.
+	\item \textbf{HU8.} Como desarrollador de firmware, quiero ejecutar el modelo cuantizado sobre el SoC basado en ARM Cortex-M33, para verificar que la inferencia entra en la memoria disponible y responde dentro del tiempo requerido. Prioridad alta.
 	\item \textbf{HU9.} Como desarrollador de firmware, quiero medir y comparar la memoria ocupada, la latencia y la exactitud entre la computadora personal y el dispositivo, para demostrar que la degradación introducida por la cuantización se mantiene acotada. Prioridad alta.
 	\item \textbf{HU10.} Como responsable técnico del producto, quiero comparar el detector basado en aprendizaje profundo contra el criterio determinista de referencia, para cuantificar la mejora que aporta la solución propuesta. Prioridad baja. Historia opcional.
 \end{itemize}
@@ -398,7 +398,7 @@ HU10 & Despliegue y validación & 2 & 3 & 3 & 8 & 8 & Baja (opcional) \\ \hline
 \textbf{Criterios de aceptación de HU3}
 \begin{itemize}
 	\item El módulo de alineación ubica el primer camino en la misma posición de la ventana para el 100 \% de las muestras procesadas.
-	\item Cada CIR normalizada presenta energía unitaria, verificado con una tolerancia relativa de $10^{-6}$.
+	\item Cada CIR normalizada presenta energía unitaria, lo cual se verifica con una tolerancia relativa de $10^{-6}$.
 	\item Se documenta la comparación de exactitud entre al menos dos esquemas de normalización sobre un clasificador de referencia, con la misma partición y la misma semilla.
 	\item El preprocesamiento se expresa como una transformación encadenable, aplicable de manera idéntica en entrenamiento y en inferencia.
 \end{itemize}
@@ -418,7 +418,7 @@ HU10 & Despliegue y validación & 2 & 3 & 3 & 8 & 8 & Baja (opcional) \\ \hline
 	\item La red convolucional alcanza un valor de F1 igual o superior a 0,88 sobre el conjunto de prueba con partición estratificada.
 	\item Se reportan exactitud, precisión, exhaustividad, F1, área bajo la curva ROC (del inglés \textit{receiver operating characteristic}) y matriz de confusión.
 	\item La red supera en F1 a los dos modelos de comparación entrenados sobre las métricas de canal.
-	\item Los resultados se reproducen a partir del registro de experimentos, que conserva la configuración, la semilla y los pesos de cada corrida.
+	\item Los resultados se reproducen a partir del registro de experimentos, que conserva la configuración, la semilla y los pesos de cada ejecución.
 \end{itemize}
 
 \textbf{Criterios de aceptación de HU6}
@@ -433,7 +433,8 @@ HU10 & Despliegue y validación & 2 & 3 & 3 & 8 & 8 & Baja (opcional) \\ \hline
 \begin{itemize}
 	\item El modelo cuantizado ocupa 64 kB de memoria de programa o menos.
 	\item La caída de F1 del modelo cuantizado respecto del modelo en punto flotante no supera los 2 puntos porcentuales sobre el conjunto de prueba.
-	\item La totalidad de los operadores del grafo cuantizado pertenece al conjunto de operadores soportados por LiteRT for Microcontrollers, verificado con la herramienta de inspección del grafo.
+	\item La totalidad de los operadores del grafo cuantizado pertenece al conjunto que implementa LiteRT for Microcontrollers, condición sin la cual el modelo no se ejecuta en el dispositivo. Se verifica con la herramienta de inspección del grafo.
+	\item Las operaciones que concentran el cómputo, convoluciones y capas densas, se resuelven con los núcleos optimizados de CMSIS-NN y no con las implementaciones de referencia, lo que se verifica con el perfilador de operadores del intérprete.
 	\item El procedimiento de cuantización queda documentado, incluida la composición del conjunto representativo utilizado para la calibración.
 \end{itemize}
 
@@ -470,27 +471,27 @@ HU10 & Despliegue y validación & 2 & 3 & 3 & 8 & 8 & Baja (opcional) \\ \hline
 
 \subsection{Comprensión del negocio}
 
-El objetivo es aumentar la exactitud de la medición de distancia en enlaces UWB mediante la identificación confiable de la condición sin línea de visión, resuelta con un modelo de aprendizaje profundo que se ejecuta dentro del dispositivo. El impacto esperado es doble: por un lado, la reducción del error de \textit{ranging} en escenarios de interior con obstrucciones, que son los más frecuentes en aplicaciones de logística y control de acceso; por el otro, la posibilidad de descartar mediciones poco confiables antes de que contaminen el cálculo de posición.
+El objetivo es aumentar la exactitud de la medición de distancia en enlaces UWB mediante la identificación confiable de la condición NLoS, resuelta con un modelo de aprendizaje profundo que se ejecuta dentro del dispositivo. El impacto esperado es doble: por un lado, la reducción del error de \textit{ranging} en escenarios de interior con obstrucciones, que son los más frecuentes en aplicaciones de logística y control de acceso; por el otro, la posibilidad de descartar mediciones poco confiables antes de que contaminen el cálculo de posición.
 
 Se adoptan tres métricas de éxito conjuntas, que deben cumplirse de manera simultánea:
 
 \begin{itemize}
 	\item Un valor de F1 igual o superior a 0,85 para el modelo desplegado, en la clasificación entre LoS y NLoS sobre el conjunto de prueba.
 	\item Una ocupación de memoria de programa igual o menor a 64 kB para el modelo cuantizado.
-	\item Una latencia de inferencia mediana igual o menor a 10 ms sobre el SoC basado en Cortex-M33.
+	\item Una latencia de inferencia mediana igual o menor a 10 ms sobre el SoC basado en ARM Cortex-M33.
 \end{itemize}
 
-El umbral de F1 se fija en relación con el estado del arte. Qi et al.\footnote{L.~Qi, Y.~Zhao, Q.~Guo, M.~Kaliuzhnyi y E.~Wang, ``Deep learning-based NLOS identification of UWB signals'', \textit{IEEE Signal Process. Lett.}, vol.~32, pp.~2394--2398, 2025, doi: \href{https://doi.org/10.1109/LSP.2025.3577127}{10.1109/LSP.2025.3577127}.} reportan una exactitud de 92,19~\% sobre el mismo conjunto de datos, con un modelo que combina capas convolucionales, una capa recurrente y un mecanismo de atención, concebido para ejecutarse fuera del chip. El presente proyecto persigue un modelo restringido a 64 kB y cuantizado a enteros de 8 bits, condiciones que previsiblemente implican una pérdida de exactitud. Por ese motivo el objetivo no es igualar ese resultado, sino acotar la brecha: un F1 de 0,85 equivale a una diferencia de alrededor de siete puntos porcentuales, que es el costo que se acepta a cambio de habilitar la inferencia dentro del dispositivo. Como el conjunto de datos está balanceado entre clases, F1 y exactitud toman valores próximos, lo que vuelve razonable la comparación.
+El umbral de F1 se fija en relación con el estado del arte. Qi et al.\footnote{Véase la referencia citada en la nota 1 (Qi et al., 2025).} reportan una exactitud de 92,19~\% sobre el mismo conjunto de datos, con un modelo que combina capas convolucionales, una capa recurrente y un mecanismo de atención, concebido para ejecutarse fuera del chip. El presente proyecto persigue un modelo restringido a 64 kB y cuantizado a enteros de 8 bits, condiciones que previsiblemente implican una pérdida de exactitud. Por ese motivo el objetivo no es igualar ese resultado, sino acotar la brecha: un F1 de 0,85 equivale a una diferencia de alrededor de siete puntos porcentuales, que es el costo que se acepta a cambio de habilitar la inferencia dentro del dispositivo. Como el conjunto de datos está balanceado entre clases, F1 y exactitud toman valores próximos, lo que vuelve razonable la comparación.
 
 El umbral se traslada a los criterios de aceptación de manera encadenada. La poda admite una pérdida de hasta 1 punto porcentual de F1 (HU6) y la cuantización hasta 2 puntos (HU7), de modo que la red de referencia debe alcanzar un F1 de al menos 0,88 (HU5) para que el modelo desplegado conserve el 0,85 aun cuando ambas pérdidas se produzcan.
 
 \subsection{Comprensión de los datos}
 
-Se trabaja con datos tabulares que contienen una señal unidimensional por registro. La fuente es el conjunto de datos público del proyecto eWINE, que reúne trazas capturadas con transceptores UWB en siete ubicaciones de interior distintas. El repositorio declara una proporción equilibrada entre las dos clases. El volumen exacto de registros y la longitud de cada traza se determinan durante la fase de comprensión de los datos, que corresponde a las historias HU1 y HU2, y se documentan junto con el informe de análisis exploratorio.
+Se trabaja con datos tabulares que contienen una señal unidimensional por registro. La fuente es el conjunto de datos público del proyecto eWINE, que reúne trazas capturadas con transceptores UWB en siete ubicaciones de interior distintas. El conjunto reúne 42.000 registros balanceados entre las dos clases, con 3.000 muestras de cada condición en cada ubicación, capturados con dos nodos UWB, uno como ancla y otro como etiqueta, sobre un módulo de radio DWM1000 de DecaWave. El repositorio aclara que solo se registraron trazas de canal, sin posicionamiento de referencia, por lo que el conjunto no sirve para evaluar localización.
 
-Cada registro incluye la respuesta al impulso del canal muestreada por el receptor y un conjunto de métricas que el propio transceptor calcula, entre ellas el índice del primer camino (\texttt{FP\_IDX}), las amplitudes de los tres primeros picos (\texttt{FP\_AMP1}, \texttt{FP\_AMP2} y \texttt{FP\_AMP3}), la potencia total del canal (\texttt{CIR\_PWR}) y el número de símbolos acumulados durante el preámbulo (\texttt{RXPACC}).
+Cada registro reúne dieciséis campos: la respuesta al impulso del canal muestreada en 1.016 puntos y un conjunto de métricas que el propio transceptor calcula, entre ellas el índice del primer camino (\texttt{FP\_IDX}), las amplitudes de los tres primeros picos (\texttt{FP\_AMP1}, \texttt{FP\_AMP2} y \texttt{FP\_AMP3}), la potencia total del canal (\texttt{CIR\_PWR}) y el número de símbolos acumulados durante el preámbulo (\texttt{RXPACC}).
 
-Respecto de la calidad, el conjunto se encuentra balanceado y no presenta valores faltantes, lo que reduce el trabajo de imputación. Existen, en cambio, dos limitaciones relevantes que condicionan el proyecto. La primera es que la totalidad de las trazas proviene de un único modelo de transceptor, de modo que las características del receptor quedan incorporadas en los datos. La segunda es que los siete entornos corresponden a un mismo tipo de construcción, lo que restringe la variedad de condiciones de propagación representadas. Ambas limitaciones se tratan en la sección \ref{sec:riesgos} y en la sección \ref{sec:gobernanza}.
+Respecto de la calidad, el conjunto se encuentra balanceado y no presenta valores faltantes, lo que reduce el trabajo de imputación. Existen, en cambio, dos limitaciones relevantes que condicionan el proyecto. La primera es que la totalidad de las trazas proviene de un único modelo de transceptor, de modo que las características del receptor quedan incorporadas en los datos. La segunda es que los siete entornos corresponden a un mismo tipo de construcción, lo que restringe la variedad de condiciones de propagación representadas. Ambas limitaciones se tratan en la sección \ref{sec:gobernanza} y en la sección \ref{sec:riesgos}.
 
 \subsection{Preparación de los datos}
 
@@ -525,7 +526,7 @@ A las métricas anteriores se suman las métricas propias del despliegue embebid
 
 \subsection{Despliegue del modelo}
 
-El despliegue es local y se realiza dentro del dispositivo, sin ningún componente en la nube. El modelo cuantizado se convierte en un arreglo de constantes en C que se compila y se enlaza junto con el firmware, de manera que queda alojado en la memoria de programa del dispositivo. El intérprete de LiteRT for Microcontrollers lo lee desde allí y lo ejecuta apoyado en los núcleos optimizados de CMSIS-NN. La imagen resultante se graba en la placa de evaluación con Cortex-M33. El banco de pruebas inyecta CIR almacenadas en memoria no volátil y entrega el resultado de la inferencia por el puerto serie, lo que permite automatizar la campaña de medición desde la computadora de desarrollo.
+El despliegue es local y se realiza dentro del dispositivo, sin ningún componente en la nube. El modelo cuantizado se convierte en un arreglo de constantes en C que se compila y se enlaza junto con el firmware, de manera que queda alojado en la memoria de programa del dispositivo. El intérprete de LiteRT for Microcontrollers lo lee desde allí y lo ejecuta apoyado en los núcleos optimizados de CMSIS-NN. La imagen resultante se graba en la placa de evaluación con ARM Cortex-M33. El banco de pruebas inyecta CIR almacenadas en memoria no volátil y entrega el resultado de la inferencia por el puerto serie, lo que permite automatizar la campaña de medición desde la computadora de desarrollo.
 \else\input{plantilla/08-crisp-dm}\fi
 
 \ifnum\revision>1
@@ -566,9 +567,9 @@ HU6 & Definir el presupuesto de memoria por capa y la función de costo que guí
 HU6 & Ejecutar la búsqueda de hiperparámetros sobre número de filtros, profundidad y tamaño de núcleo & 8 h & Alta \\ \hline
 HU6 & Aplicar poda estructurada de filtros al modelo seleccionado y reentrenarlo & 8 h & Media \\ \hline
 HU7 & Aplicar la cuantización posterior al entrenamiento a enteros de 8 bits con un conjunto representativo & 6 h & Alta \\ \hline
-HU7 & Verificar la compatibilidad de todos los operadores del grafo con los núcleos de LiteRT for Microcontrollers & 5 h & Alta \\ \hline
+HU7 & Verificar que todos los operadores del grafo estén implementados en LiteRT for Microcontrollers y que los de mayor cómputo tengan núcleo en CMSIS-NN & 5 h & Alta \\ \hline
 HU7 & Aplicar entrenamiento consciente de la cuantización si la caída de F1 supera los 2 puntos porcentuales & 8 h & Media \\ \hline
-HU8 & Configurar el proyecto de firmware con LiteRT for Microcontrollers y CMSIS-NN para el Cortex-M33 & 8 h & Alta \\ \hline
+HU8 & Configurar el proyecto de firmware con LiteRT for Microcontrollers y CMSIS-NN para el ARM Cortex-M33 & 8 h & Alta \\ \hline
 HU8 & Convertir el modelo cuantizado en un arreglo de C e integrarlo en la imagen de firmware & 4 h & Alta \\ \hline
 HU8 & Implementar el banco de pruebas que inyecta CIR almacenadas y devuelve la inferencia por el puerto serie & 8 h & Alta \\ \hline
 HU9 & Medir la memoria de programa y la memoria de trabajo a partir del mapa de memoria del enlazador & 4 h & Alta \\ \hline
@@ -660,7 +661,7 @@ Sprint 7 & HU6 & Refactorizar el código de entrenamiento para la etapa de cuant
 Sprint 7 & HU6 & Verificar la trazabilidad de los experimentos registrados & 4 h & Alumno & 0 \% \\ \hline
 Sprint 7 & HU6 & Preparar el material técnico de la revisión intermedia & 6 h & Alumno & 0 \% \\ \hline
 Sprint 8 & HU7 & Aplicar la cuantización posterior al entrenamiento a enteros de 8 bits & 6 h & Alumno & 0 \% \\ \hline
-Sprint 8 & HU7 & Verificar la compatibilidad de los operadores del grafo cuantizado & 5 h & Alumno & 0 \% \\ \hline
+Sprint 8 & HU7 & Verificar los operadores del grafo en LiteRT y su cobertura en CMSIS-NN & 5 h & Alumno & 0 \% \\ \hline
 Sprint 8 & HU7 & Aplicar entrenamiento consciente de la cuantización & 8 h & Alumno & 0 \% \\ \hline
 Sprint 8 & HU7 & Construir el conjunto representativo para la calibración de escalas & 5 h & Alumno & 0 \% \\ \hline
 Sprint 8 & HU7 & Comparar la exactitud del modelo en punto flotante y del modelo cuantizado por entorno & 8 h & Alumno & 0 \% \\ \hline
@@ -801,11 +802,13 @@ En esta sección se analizan el marco normativo aplicable a los datos y a las he
 
 \subsection{Cumplimiento normativo}
 
-\textbf{Normativa de protección de datos personales.} Los datos que se emplean son respuestas al impulso del canal radioeléctrico y métricas calculadas por el receptor. Se trata de mediciones físicas de un enlace de comunicaciones que no contienen identificadores de personas, ni permiten por sí mismas identificar a una persona humana determinada o determinable. Por ese motivo no resultan aplicables la Ley 25.326 de Protección de Datos Personales de la República Argentina ni el Reglamento General de Protección de Datos de la Unión Europea. Las trazas se capturaron en entornos de interior sin registrar información sobre las personas presentes.
+\textbf{Normativa de protección de datos personales.} Los datos que se emplean son respuestas al impulso del canal radioeléctrico y métricas calculadas por el receptor. Se trata de mediciones físicas de un enlace de comunicaciones que no contienen identificadores de personas, ni permiten por sí mismas identificar a una persona humana determinada o determinable. Por ese motivo no resultan aplicables la Ley 25.326 de Protección de Datos Personales de la República Argentina ni el Reglamento General de Protección de Datos de la Unión Europea. El repositorio del conjunto de datos eWINE documenta que cada medición se realizó entre dos nodos UWB y que solo se registraron trazas de canal, sin posicionamiento de referencia. No describe qué generó la condición de obstrucción en cada captura, de modo que no se afirma nada al respecto: la conclusión se apoya en la naturaleza de los datos registrados, que no incluyen identificadores de ningún tipo.
 
 Corresponde señalar que esa conclusión vale para el conjunto de datos y para el alcance del presente proyecto. Un despliegue posterior de la solución dentro de un sistema de localización que siga la posición de personas identificables sí quedaría comprendido en ambas normas, dado que los datos de localización constituyen datos personales. En ese escenario serían exigibles la base legal para el tratamiento, la información al titular de los datos y las medidas de seguridad correspondientes. La advertencia se deja asentada para quien retome el trabajo con fines de producto.
 
-\textbf{Licenciamiento del conjunto de datos.} El conjunto de datos eWINE se distribuye de manera pública a través de su repositorio. Antes de su incorporación al proyecto se verifican las condiciones de licencia declaradas en el repositorio y se documenta el resultado de esa verificación en la memoria técnica. Si el repositorio no declara una licencia explícita, los datos se utilizan con fines exclusivamente académicos, se cita el trabajo científico asociado a su publicación y se deja constancia de que la ausencia de licencia impide cualquier uso comercial derivado. Esta restricción no compromete el alcance del proyecto, que es académico y de prueba de concepto.
+\textbf{Licenciamiento del conjunto de datos.} El repositorio del conjunto de datos eWINE declara la titularidad de SensorLab, del Jožef Stefan Institute, y lo distribuye bajo licencia Creative Commons Attribution 4.0 International (CC BY 4.0). Esa licencia permite copiar, modificar y redistribuir los datos, incluso con fines comerciales, con la condición de atribuir la autoría, enlazar la licencia e indicar si se introdujeron cambios. Los autores solicitan además citar el trabajo científico asociado a su publicación, que se referencia en la sección \ref{sec:alcance}. El proyecto cumple ambas condiciones en los entregables y en la memoria técnica.
+
+El punto tiene consecuencia práctica: como la licencia admite el uso comercial, no impone restricciones a la explotación posterior del modelo por parte de MobileKnowledge, siempre que se conserve la atribución del conjunto de datos de origen.
 
 \textbf{Licenciamiento de las herramientas y de los modelos.} Las bibliotecas empleadas para el entrenamiento y la inferencia, entre ellas TensorFlow, LiteRT for Microcontrollers y CMSIS-NN, se distribuyen bajo licencia Apache 2.0, que permite el uso, la modificación y la distribución, incluso con fines comerciales, con la condición de conservar los avisos de copyright y de licencia. El proyecto no emplea modelos preentrenados de terceros: la totalidad de los pesos se obtiene por entrenamiento propio sobre el conjunto de datos citado.
 
@@ -817,7 +820,7 @@ La propiedad intelectual del modelo desarrollado corresponde a MobileKnowledge. 
 
 \subsection{Ética en el uso de inteligencia artificial}
 
-\textbf{Sesgos identificados.} El conjunto de datos presenta dos sesgos de origen que condicionan el alcance de las conclusiones. El primero es un sesgo de instrumentación: la totalidad de las trazas proviene de un mismo modelo de transceptor, de modo que las características de su cadena de recepción quedan incorporadas en la señal y el modelo puede aprenderlas como si fueran propias de la condición de propagación. El segundo es un sesgo de entorno: las siete ubicaciones corresponden a construcciones de interior de características similares, por lo que quedan subrepresentadas las condiciones de propagación de otros tipos de edificación y de escenarios industriales o exteriores.
+\textbf{Sesgos identificados.} El conjunto de datos presenta dos sesgos de origen que condicionan el alcance de las conclusiones. El primero es un sesgo de instrumentación: la totalidad de las trazas proviene de un mismo módulo de radio, el DWM1000 de DecaWave, de modo que las características de su cadena de recepción quedan incorporadas en la señal y el modelo puede aprenderlas como si fueran propias de la condición de propagación. El segundo es un sesgo de entorno: las siete ubicaciones corresponden a construcciones de interior de características similares, por lo que quedan subrepresentadas las condiciones de propagación de otros tipos de edificación y de escenarios industriales o exteriores.
 
 La consecuencia directa de ambos sesgos es una sobrestimación del desempeño esperado en condiciones reales. Para acotarla se adopta el esquema de validación con exclusión de un entorno completo, que mide de manera explícita la capacidad de generalizar a un escenario no visto, y se reportan las métricas discriminadas por entorno en lugar de un único valor promedio.
 
@@ -962,7 +965,7 @@ En la tabla \ref{tab:sprintreview} se proyecta la revisión de cuatro historias 
 \multirow{-2}{=}{HU5 \newline Sprint 5} & Evaluar con exclusión de un entorno completo & \multirow{-2}{=}{Modelo de línea base con su informe de métricas} & \multirow{-2}{=}{F1 igual o superior a 0,88 en el conjunto de prueba y superioridad frente a los modelos de comparación} & \multirow{-2}{=}{El desempeño con exclusión de entorno puede resultar sensiblemente menor} \\
 \hline
                       & Aplicar la cuantización a enteros de 8 bits & & & \\ \cline{2-2}
-\multirow{-2}{=}{HU7 \newline Sprint 8} & Verificar la compatibilidad de los operadores & \multirow{-2}{=}{Modelo cuantizado y su informe de verificación} & \multirow{-2}{=}{El modelo ocupa 64 kB o menos, pierde menos de 2 puntos de F1 y todos sus operadores están soportados} & \multirow{-2}{=}{Riesgo R4: la degradación puede exigir entrenamiento consciente de la cuantización} \\
+\multirow{-2}{=}{HU7 \newline Sprint 8} & Verificar los operadores y su cobertura en CMSIS-NN & \multirow{-2}{=}{Modelo cuantizado y su informe de verificación} & \multirow{-2}{=}{El modelo ocupa 64 kB o menos, pierde menos de 2 puntos de F1, sus operadores están implementados y los de mayor cómputo usan CMSIS-NN} & \multirow{-2}{=}{Riesgo R4: la degradación puede exigir entrenamiento consciente de la cuantización} \\
 \hline
                       & Integrar el modelo en la imagen de firmware & & & \\ \cline{2-2}
 \multirow{-2}{=}{HU8 \newline Sprint 9} & Implementar el banco de pruebas sobre el dispositivo & \multirow{-2}{=}{Firmware que ejecuta la inferencia en la placa de evaluación} & \multirow{-2}{=}{El dispositivo clasifica 100 CIR inyectadas y sostiene 1000 inferencias sin reinicios} & \multirow{-2}{=}{Riesgo R3: depende de la disponibilidad del hardware de evaluación} \\
