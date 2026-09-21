@@ -283,6 +283,7 @@ Para el desarrollo del presente proyecto se supone que:
 	\item El alumno dispone de al menos 16 horas semanales durante los períodos activos del cronograma, y de las condiciones de salud necesarias para sostener esa dedicación.
 	\item MobileKnowledge mantiene el interés en el proyecto y la asignación del cliente durante todo el período, sin que un cambio de prioridades comerciales interrumpa las instancias de revisión.
 	\item La empresa provee la placa de evaluación con un SoC basado en ARM Cortex-M33 y su cadena de compilación durante toda la etapa de despliegue.
+	\item NXP Semiconductors mantiene disponibles, sin cambios incompatibles, el SDK, las herramientas de desarrollo y la documentación de los transceptores SR250 y NCJ29D6 durante la etapa de despliegue.
 	\item El conjunto de datos eWINE permanece disponible en su repositorio público y sus condiciones de uso no se modifican de manera restrictiva.
 	\item La respuesta al impulso del canal contiene información suficiente para discriminar las condiciones LoS y NLoS con la exactitud objetivo, tal como reportan los trabajos publicados sobre el mismo conjunto de datos.
 	\item Las herramientas de código abierto empleadas, entre ellas TensorFlow, LiteRT for Microcontrollers y CMSIS-NN, conservan sus licencias permisivas actuales.
@@ -671,7 +672,7 @@ Sprint 8 & HU7 & Documentar el procedimiento de cuantización & 4 h & Alumno & 0
 Sprint 9 & HU8 & Configurar el proyecto de firmware con el intérprete y los núcleos optimizados & 8 h & Alumno & 0 \% \\ \hline
 Sprint 9 & HU8 & Convertir el modelo en arreglo de C e integrarlo en la imagen de firmware & 4 h & Alumno & 0 \% \\ \hline
 Sprint 9 & HU8 & Implementar el banco de pruebas que inyecta CIR y responde por el puerto serie & 8 h & Alumno & 0 \% \\ \hline
-Sprint 9 & HU8 & Configurar la cadena de compilación y de depuración de la placa de evaluación & 8 h & Alumno & 0 \% \\ \hline
+Sprint 9 & HU8 & Configurar la cadena de compilación y de depuración, y archivar la versión fijada del SDK con su documentación & 8 h & Alumno & 0 \% \\ \hline
 Sprint 9 & HU8 & Resolver los errores de asignación de la memoria de trabajo del intérprete & 8 h & Alumno & 0 \% \\ \hline
 Sprint 9 & HU8 & Implementar la carga de vectores de prueba desde memoria no volátil & 8 h & Alumno & 0 \% \\ \hline
 Sprint 9 & HU8 & Redactar la guía interna de integración del modelo en el firmware & 4 h & Alumno & 0 \% \\ \hline
@@ -725,7 +726,7 @@ De las 600 horas planificadas, 480 corresponden a actividades técnicas y 120 a 
 \section{11. Diagrama de Gantt (sprints)}
 \label{sec:gantt}
 
-En la figura \ref{fig:gantt} se presenta el diagrama de Gantt del proyecto, construido sobre los sprints definidos en la sección \ref{sec:sprints}. El eje horizontal representa las 64 semanas comprendidas entre el inicio de la cursada de Gestión de Proyectos y la defensa pública. Las barras se muestran de manera consecutiva, sin superposición, dado que el proyecto se ejecuta con un único recurso humano. Los sprints técnicos se representan en azul, los sprints no técnicos en naranja, y los períodos de receso y de contingencia en gris. Los hitos se indican con rombos. Cada barra se identifica con el número de sprint y la historia de usuario que le corresponde; el detalle de las tareas de cada sprint se encuentra en la tabla \ref{tab:sprints}.
+En la figura \ref{fig:gantt} se presenta el diagrama de Gantt del proyecto, construido sobre los sprints definidos en la sección \ref{sec:sprints}. El eje horizontal representa las 64 semanas comprendidas entre el inicio de la cursada de Gestión de Proyectos y la defensa pública. Las barras se muestran de manera consecutiva, sin superposición, dado que el proyecto se ejecuta con un único recurso humano. Los sprints técnicos se representan en azul, los sprints no técnicos en naranja, y los períodos de receso y de contingencia en gris. Los hitos se indican con rombos. Cada barra se identifica con el número de sprint y la historia de usuario o la fase que le corresponde; el detalle de las tareas de cada sprint se encuentra en la tabla \ref{tab:sprints}.
 
 \begin{figure}[H]
 \centering
@@ -776,7 +777,7 @@ En la figura \ref{fig:gantt} se presenta el diagrama de Gantt del proyecto, cons
 \ganttbar{S8. HU7}{36}{38} \\
 \ganttbar{S9. HU8}{39}{41} \\
 \ganttbar{S10. HU9/10}{42}{44} \\
-\ganttbar[bar/.append style={fill=colorPausa}]{Buffer}{45}{46} \\
+\ganttbar[bar/.append style={fill=colorPausa}]{Contingencia}{45}{46} \\
 \ganttbar[bar/.append style={fill=colorNoTecnico}]{S11. TTFA}{47}{55} \\
 \ganttbar[bar/.append style={fill=colorNoTecnico}]{S11. TTFB}{56}{64} \\
 
@@ -802,9 +803,9 @@ En esta sección se analizan el marco normativo aplicable a los datos y a las he
 
 \subsection{Cumplimiento normativo}
 
-\textbf{Normativa de protección de datos personales.} Los datos que se emplean son respuestas al impulso del canal radioeléctrico y métricas calculadas por el receptor. Se trata de mediciones físicas de un enlace de comunicaciones que no contienen identificadores de personas, ni permiten por sí mismas identificar a una persona humana determinada o determinable. Por ese motivo no resultan aplicables la Ley 25.326 de Protección de Datos Personales de la República Argentina ni el Reglamento General de Protección de Datos de la Unión Europea. El repositorio del conjunto de datos eWINE documenta que cada medición se realizó entre dos nodos UWB y que solo se registraron trazas de canal, sin posicionamiento de referencia. No describe qué generó la condición de obstrucción en cada captura, de modo que no se afirma nada al respecto: la conclusión se apoya en la naturaleza de los datos registrados, que no incluyen identificadores de ningún tipo.
+\textbf{Normativa de protección de datos personales.} Los datos que se emplean son respuestas al impulso del canal radioeléctrico y métricas calculadas por el receptor. Se trata de mediciones físicas de un enlace de comunicaciones que no contienen identificadores de personas, ni permiten por sí mismas identificar a una persona humana determinada o determinable. Por ese motivo no resultan aplicables la Ley 25.326 de Protección de Datos Personales de la República Argentina ni el Reglamento General de Protección de Datos de la Unión Europea. El repositorio del conjunto de datos eWINE documenta que cada medición se realizó entre dos nodos UWB y que solo se registraron trazas de canal, sin posicionamiento de referencia. No especifica cómo se generó la obstrucción en cada captura: la conclusión se apoya en que los datos registrados no incluyen identificadores de ningún tipo.
 
-Corresponde señalar que esa conclusión vale para el conjunto de datos y para el alcance del presente proyecto. Un despliegue posterior de la solución dentro de un sistema de localización que siga la posición de personas identificables sí quedaría comprendido en ambas normas, dado que los datos de localización constituyen datos personales. En ese escenario serían exigibles la base legal para el tratamiento, la información al titular de los datos y las medidas de seguridad correspondientes. La advertencia se deja asentada para quien retome el trabajo con fines de producto.
+Corresponde señalar que esa conclusión vale para el conjunto de datos y para el alcance del presente proyecto. Un despliegue posterior de la solución dentro de un sistema de localización que siga la posición de personas identificables sí quedaría comprendido en ambas normas, dado que los datos de localización constituyen datos personales. En ese escenario serían exigibles la base legal para el tratamiento, la información al titular de los datos y las medidas de seguridad correspondientes. La advertencia se deja asentada para una eventual continuación del trabajo con fines comerciales.
 
 \textbf{Licenciamiento del conjunto de datos.} El repositorio del conjunto de datos eWINE declara la titularidad de SensorLab, del Jožef Stefan Institute, y lo distribuye bajo licencia Creative Commons Attribution 4.0 International (CC BY 4.0). Esa licencia permite copiar, modificar y redistribuir los datos, incluso con fines comerciales, con la condición de atribuir la autoría, enlazar la licencia e indicar si se introdujeron cambios. Los autores solicitan además citar el trabajo científico asociado a su publicación, que se referencia en la sección \ref{sec:alcance}. El proyecto cumple ambas condiciones en los entregables y en la memoria técnica.
 
@@ -824,7 +825,7 @@ La propiedad intelectual del modelo desarrollado corresponde a MobileKnowledge. 
 
 La consecuencia directa de ambos sesgos es una sobrestimación del desempeño esperado en condiciones reales. Para acotarla se adopta el esquema de validación con exclusión de un entorno completo, que mide de manera explícita la capacidad de generalizar a un escenario no visto, y se reportan las métricas discriminadas por entorno en lugar de un único valor promedio.
 
-\textbf{Riesgos de impacto por uso indebido.} El uso más sensible de la tecnología UWB es la verificación de proximidad en sistemas de llave digital y de control de acceso, donde la medición de distancia constituye una barrera de seguridad. En ese contexto, un falso negativo del detector, es decir una condición de obstrucción clasificada como línea de visión, admite que una medición corrompida por multitrayecto se considere válida y facilita ataques de retransmisión o de manipulación de la distancia estimada. El riesgo es asimétrico: un falso positivo solo descarta una medición correcta y degrada la disponibilidad, mientras que un falso negativo degrada la seguridad.
+\textbf{Riesgos de impacto por uso indebido.} El uso más sensible de la tecnología UWB es la verificación de proximidad en sistemas de llave digital y de control de acceso, donde la medición de distancia constituye una barrera de seguridad. En ese contexto, un falso negativo del detector, es decir, una condición de obstrucción clasificada como línea de visión, permite que una medición corrompida por multitrayecto se considere válida y facilita ataques de retransmisión o de manipulación de la distancia estimada. El riesgo es asimétrico: un falso positivo solo descarta una medición correcta y degrada la disponibilidad, mientras que un falso negativo degrada la seguridad.
 
 Un segundo riesgo es el uso del componente fuera de su dominio de validez. Un modelo entrenado con las características de un transceptor y de un tipo de entorno, aplicado sin reentrenamiento a otro hardware o a un escenario industrial, puede presentar un desempeño muy inferior al reportado sin que el sistema que lo integra lo advierta.
 
@@ -888,6 +889,12 @@ Un segundo riesgo es el uso del componente fuera de su dominio de validez. Un mo
 	\item Probabilidad de ocurrencia (O): 2. El repositorio se mantiene publicado desde hace varios años y corresponde a un proyecto de investigación finalizado, situación en la que los cambios de condiciones son infrecuentes.
 \end{itemize}
 
+\textbf{Riesgo 8:} NXP Semiconductors discontinúa o modifica de manera incompatible el SDK, las herramientas de desarrollo o la documentación de los transceptores SR250 y NCJ29D6 durante la etapa de despliegue.
+\begin{itemize}
+	\item Severidad (S): 5. Un cambio incompatible en esa etapa obligaría a adaptar el proyecto de firmware a la nueva versión, con reprocesamiento de parte de la integración y un posible atraso del prototipo. No afectaría al modelo ni al trabajo de los sprints 1 a 8, que se ejecuta en la computadora de desarrollo sin herramientas del fabricante.
+	\item Probabilidad de ocurrencia (O): 2. La exposición se limita a los sprints 9 y 10: antes de esa etapa el proyecto no usa herramientas del fabricante y puede adoptar la versión vigente al comenzarla. El SDK se distribuye por versiones, de modo que una actualización no invalida por sí misma la versión en uso, y la familia de productos se encuentra vigente y con demanda comercial activa, lo que hace improbable su discontinuación en ese plazo.
+\end{itemize}
+
 \textbf{b) Tabla de gestión de riesgos}
 
 El número de prioridad del riesgo (RPN, del inglés \textit{risk priority number}) se calcula como el producto entre severidad y ocurrencia, RPN $=$ S $\times$ O. En la tabla \ref{tab:riesgos} se presentan los valores originales y los valores posteriores a la mitigación, identificados con asterisco.
@@ -907,10 +914,11 @@ R4. Degradación excesiva de la exactitud por cuantización & 6 & 5 & 30 & & & \
 R5. Reducción sostenida de la disponibilidad horaria & 7 & 7 & 49 & 6 & 4 & 24 \\ \hline
 R6. Cambio de prioridades comerciales de la empresa & 6 & 4 & 24 & & & \\ \hline
 R7. Indisponibilidad del conjunto de datos público & 5 & 2 & 10 & & & \\ \hline
+R8. Cambio incompatible en el soporte del fabricante & 5 & 2 & 10 & & & \\ \hline
 \end{tabularx}%
 \end{table}
 
-Criterio adoptado: se elaboran planes de mitigación para los riesgos cuyo RPN resulta mayor que 30. Los riesgos R3, R4, R6 y R7 quedan por debajo de ese umbral y se someten a seguimiento, sin acción de mitigación específica.
+Criterio adoptado: se elaboran planes de mitigación para los riesgos cuyo RPN resulta mayor que 30. Los riesgos R3, R4, R6, R7 y R8 quedan por debajo de ese umbral y se someten a seguimiento, sin acción de mitigación específica.
 
 Nota: los valores marcados con asterisco corresponden a la situación posterior a la aplicación de la mitigación. Las filas que no los presentan corresponden a riesgos que, por quedar debajo del umbral, no requieren un plan de mitigación.
 
