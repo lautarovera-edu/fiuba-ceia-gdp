@@ -83,16 +83,19 @@
 Revisión & \multicolumn{1}{c|}{\cellcolor[HTML]{C0C0C0}Detalles de los cambios realizados} & Fecha      \\ \hline
 0      & Creación del documento                                 &\fechaInicioName \\ \hline
 \ifnum\revision>0
-1      & Se completa hasta la sección 5 inclusive               & 8 de septiembre de 2026 \\ \hline
+1      & Se completa hasta la sección 5 inclusive               & 5 de septiembre de 2026 \\ \hline
 \fi
 \ifnum\revision>1
-2      & Se completa hasta la sección 9 inclusive               & 15 de septiembre de 2026 \\ \hline
+2      & Se completa hasta la sección 9 inclusive               & 11 de septiembre de 2026 \\ \hline
 \fi
 \ifnum\revision>2
-3      & Se completa hasta la sección 12 inclusive              & 22 de septiembre de 2026 \\ \hline
+3      & Se completa hasta la sección 12 inclusive              & 17 de septiembre de 2026 \\ \hline
 \fi
 \ifnum\revision>3
-4      & Se completa el plan	                                 & 29 de septiembre de 2026 \\ \hline
+4      & Se completa el plan	                                & 21 de septiembre de 2026 \\ \hline
+\fi
+\ifnum\revision>3
+5      & Se aplican correcciones finales                        & 23 de septiembre de 2026 \\ \hline
 \fi
 
 \end{tabularx}
@@ -147,14 +150,14 @@ En la figura \ref{fig:diagBloques} se presenta el diagrama en bloques del sistem
 \begin{figure}[htpb]
 \centering
 \begin{tikzpicture}[
-	font=\scriptsize,
-	bloque/.style={rectangle, rounded corners=2pt, draw=black!45, line width=0.4pt,
-	               align=center, text width=2.1cm, minimum height=1.15cm, inner sep=2pt},
-	offline/.style={bloque, fill=colorOffline},
-	target/.style={bloque, fill=colorTarget},
-	salida/.style={bloque, fill=colorSalida},
-	flecha/.style={-{Stealth[length=4pt]}, draw=black!60, line width=0.5pt},
-	]
+    font=\scriptsize,
+    bloque/.style={rectangle, rounded corners=2pt, draw=black!45, line width=0.4pt,
+                   align=center, text width=2.1cm, minimum height=1.15cm, inner sep=2pt},
+    offline/.style={bloque, fill=colorOffline},
+    target/.style={bloque, fill=colorTarget},
+    salida/.style={bloque, fill=colorSalida},
+    flecha/.style={-{Stealth[length=4pt]}, draw=black!60, line width=0.5pt},
+    ]
 
 % Cadena de desarrollo
 \node[offline] (a1) {Conjunto de\\datos eWINE};
@@ -190,10 +193,10 @@ En la figura \ref{fig:diagBloques} se presenta el diagrama en bloques del sistem
 \draw[flecha, dashed] (a5.south) -- node[right, pos=0.45, font=\scriptsize] {despliegue} (a5.south|-b4.north) -| (b4.north);
 
 \begin{scope}[on background layer]
-	\node[draw=black!35, dashed, rounded corners=3pt, inner sep=7pt,
-	      fit=(a1)(a5), label={[font=\scriptsize\itshape, black!65]above:Entorno de desarrollo}] (grupoA) {};
-	\node[draw=black!35, dashed, rounded corners=3pt, inner sep=7pt,
-	      fit=(b1)(b5)(c1)(c2), label={[font=\scriptsize\itshape, black!65]below:Sistema embebido}] (grupoB) {};
+    \node[draw=black!35, dashed, rounded corners=3pt, inner sep=7pt,
+          fit=(a1)(a5), label={[font=\scriptsize\itshape, black!65]above:Entorno de desarrollo}] (grupoA) {};
+    \node[draw=black!35, dashed, rounded corners=3pt, inner sep=7pt,
+          fit=(b1)(b5)(c1)(c2), label={[font=\scriptsize\itshape, black!65]below:Sistema embebido}] (grupoB) {};
 \end{scope}
 
 \end{tikzpicture}
@@ -228,11 +231,11 @@ Usuario final & Integradores de sistemas RTLS y desarrolladores de firmware UWB 
 A continuación se describen las características de cada interesado que resultan relevantes para la planificación.
 
 \begin{itemize}
-	\item Cliente: Carlos Paternain aprueba los entregables y participa en la definición de los criterios de aceptación. Conoce en profundidad la tecnología UWB y su mercado, por lo que su revisión es determinante para validar que la planificación sea realista.
-	\item Responsable: el alumno ejecuta la totalidad de las tareas técnicas y de documentación. Cursa el posgrado en paralelo con su actividad profesional, condición que fija la dedicación semanal disponible y que se refleja en el cronograma.
-	\item Orientador: el director del Trabajo Final orienta las decisiones metodológicas, en particular el diseño de la validación y la interpretación de las métricas. Se prevén encuentros de seguimiento al cierre de cada bloque de sprints.
-	\item Colaboradores: el equipo de ingeniería UWB de MobileKnowledge facilita el acceso al hardware de evaluación y responde consultas sobre el formato de la CIR. Su participación es puntual y no se le asignan tareas del cronograma.
-	\item Usuario final: los integradores de sistemas RTLS y los desarrolladores de firmware UWB son quienes adoptarían la solución. Valoran la exactitud del \textit{ranging}, el consumo de memoria y la ausencia de cambios en el protocolo existente.
+    \item Cliente: Carlos Paternain aprueba los entregables y participa en la definición de los criterios de aceptación. Conoce en profundidad la tecnología UWB y su mercado, por lo que su revisión es determinante para validar que la planificación sea realista.
+    \item Responsable: el alumno ejecuta la totalidad de las tareas técnicas y de documentación. Cursa el posgrado en paralelo con su actividad profesional, condición que fija la dedicación semanal disponible y que se refleja en el cronograma.
+    \item Orientador: el director del Trabajo Final orienta las decisiones metodológicas, en particular el diseño de la validación y la interpretación de las métricas. Se prevén encuentros de seguimiento al cierre de cada bloque de sprints.
+    \item Colaboradores: el equipo de ingeniería UWB de MobileKnowledge facilita el acceso al hardware de evaluación y responde consultas sobre el formato de la CIR. Su participación es puntual y no se le asignan tareas del cronograma.
+    \item Usuario final: los integradores de sistemas RTLS y los desarrolladores de firmware UWB son quienes adoptarían la solución. Valoran la exactitud del \textit{ranging}, el consumo de memoria y la ausencia de cambios en el protocolo existente.
 \end{itemize}
 
 \section{3. Propósito del proyecto}
@@ -246,32 +249,32 @@ El propósito de este proyecto es demostrar que la detección de la condición N
 El proyecto incluye:
 
 \begin{itemize}
-	\item La construcción de un flujo reproducible de ingesta del conjunto de datos público eWINE\footnote{Conjunto de datos \texttt{UWB-LOS-NLOS-Data-Set}, SensorLab, Jožef Stefan Institute, 2017, bajo licencia CC BY 4.0. Disponible en \href{https://github.com/ewine-project/UWB-LOS-NLOS-Data-Set}{github.com/ewine-project/UWB-LOS-NLOS-Data-Set}. Los autores solicitan citar: K.~Bregar, A.~Hrovat y M.~Mohorčič, ``NLOS channel detection with multilayer perceptron in low-rate personal area networks for indoor localization accuracy improvement'', en \textit{Proc. 8th Jožef Stefan International Postgraduate School Students' Conference}, Liubliana, Eslovenia, 2016.}, con particiones versionadas para entrenamiento, validación y prueba.
-	\item El análisis exploratorio de las respuestas al impulso del canal, discriminado por clase y por entorno de medición, y la documentación de los sesgos detectados.
-	\item El diseño e implementación del preprocesamiento de la CIR, que comprende:
-		\begin{itemize}
-		\item La alineación respecto del primer camino detectado.
-		\item La normalización de amplitud.
-		\item La selección del ancho de ventana que minimiza el uso de memoria sin degradar la exactitud.
-		\end{itemize}
-	\item El entrenamiento de una red convolucional unidimensional de referencia y de dos modelos de comparación clásicos sobre las métricas de canal.
-	\item La exploración de arquitecturas sujeta a un presupuesto de memoria explícito, con poda estructurada del modelo seleccionado.
-	\item La cuantización del modelo a enteros de 8 bits, la verificación de que sus operadores estén implementados en LiteRT for Microcontrollers, denominado TensorFlow Lite for Microcontrollers hasta su cambio de marca, y la comprobación de que los de mayor cómputo cuenten con núcleo optimizado en CMSIS-NN.
-	\item El desarrollo del firmware de prueba que ejecuta la inferencia sobre un SoC basado en ARM Cortex-M33, con aceleración mediante CMSIS-NN (Common Microcontroller Software Interface Standard, Neural Networks), la biblioteca de núcleos de redes neuronales que ARM optimiza para esos procesadores.
-	\item La medición sobre el hardware de evaluación de la memoria de programa ocupada, la memoria de trabajo del intérprete, la latencia de inferencia y la exactitud alcanzada.
-	\item La comparación de los resultados del modelo contra el criterio determinista de referencia disponible en el transceptor.
-	\item La documentación técnica interna para MobileKnowledge, que comprende la ficha técnica del modelo y la guía de integración en el firmware.
-	\item La elaboración del informe de avance y de la memoria técnica.
+    \item La construcción de un flujo reproducible de ingesta del conjunto de datos público eWINE\footnote{Conjunto de datos \texttt{UWB-LOS-NLOS-Data-Set}, SensorLab, Jožef Stefan Institute, 2017, bajo licencia CC BY 4.0. Disponible en \href{https://github.com/ewine-project/UWB-LOS-NLOS-Data-Set}{github.com/ewine-project/UWB-LOS-NLOS-Data-Set}. Los autores solicitan citar: K.~Bregar, A.~Hrovat y M.~Mohorčič, ``NLOS channel detection with multilayer perceptron in low-rate personal area networks for indoor localization accuracy improvement'', en \textit{Proc. 8th Jožef Stefan International Postgraduate School Students' Conference}, Liubliana, Eslovenia, 2016.}, con particiones versionadas para entrenamiento, validación y prueba.
+    \item El análisis exploratorio de las respuestas al impulso del canal, discriminado por clase y por entorno de medición, y la documentación de los sesgos detectados.
+    \item El diseño e implementación del preprocesamiento de la CIR, que comprende:
+        \begin{itemize}
+        \item La alineación respecto del primer camino detectado.
+        \item La normalización de amplitud.
+        \item La selección del ancho de ventana que minimiza el uso de memoria sin degradar la exactitud.
+        \end{itemize}
+    \item El entrenamiento de una red convolucional unidimensional de referencia y de dos modelos de comparación clásicos sobre las métricas de canal.
+    \item La exploración de arquitecturas sujeta a un presupuesto de memoria explícito, con poda estructurada del modelo seleccionado.
+    \item La cuantización del modelo a enteros de 8 bits, la verificación de que sus operadores estén implementados en LiteRT for Microcontrollers, denominado TensorFlow Lite for Microcontrollers hasta su cambio de marca, y la comprobación de que los de mayor cómputo cuenten con núcleo optimizado en CMSIS-NN.
+    \item El desarrollo del firmware de prueba que ejecuta la inferencia sobre un SoC basado en ARM Cortex-M33, con aceleración mediante CMSIS-NN (Common Microcontroller Software Interface Standard, Neural Networks), la biblioteca de núcleos de redes neuronales que ARM optimiza para esos procesadores.
+    \item La medición sobre el hardware de evaluación de la memoria de programa ocupada, la memoria de trabajo del intérprete, la latencia de inferencia y la exactitud alcanzada.
+    \item La comparación de los resultados del modelo contra el criterio determinista de referencia disponible en el transceptor.
+    \item La documentación técnica interna para MobileKnowledge, que comprende la ficha técnica del modelo y la guía de integración en el firmware.
+    \item La elaboración del informe de avance y de la memoria técnica.
 \end{itemize}
 
 El presente proyecto no incluye:
 
 \begin{itemize}
-	\item La realización de campañas de medición propias para generar un conjunto de datos nuevo.
-	\item La integración del modelo dentro del firmware de producción de los transceptores SR250 o NCJ29D6.
-	\item El desarrollo de una aplicación de localización en tiempo real completa.
-	\item La industrialización, la fabricación de hardware a medida y cualquier actividad de puesta en el mercado.
-	\item La detección o corrección del error de \textit{ranging} en magnitud, que constituye un problema de regresión distinto del problema de clasificación abordado.
+    \item La realización de campañas de medición propias para generar un conjunto de datos nuevo.
+    \item La integración del modelo dentro del firmware de producción de los transceptores SR250 o NCJ29D6.
+    \item El desarrollo de una aplicación de localización en tiempo real completa.
+    \item La industrialización, la fabricación de hardware a medida y cualquier actividad de puesta en el mercado.
+    \item La detección o corrección del error de \textit{ranging} en magnitud, que constituye un problema de regresión distinto del problema de clasificación abordado.
 \end{itemize}
 
 \section{5. Supuestos del proyecto}
@@ -280,14 +283,14 @@ El presente proyecto no incluye:
 Para el desarrollo del presente proyecto se supone que:
 
 \begin{itemize}
-	\item El alumno dispone de al menos 16 horas semanales durante los períodos activos del cronograma, y de las condiciones de salud necesarias para sostener esa dedicación.
-	\item MobileKnowledge mantiene el interés en el proyecto y la asignación del cliente durante todo el período, sin que un cambio de prioridades comerciales interrumpa las instancias de revisión.
-	\item La empresa provee la placa de evaluación con un SoC basado en ARM Cortex-M33 y su cadena de compilación durante toda la etapa de despliegue.
-	\item NXP Semiconductors mantiene disponibles, sin cambios incompatibles, el SDK, las herramientas de desarrollo y la documentación de los transceptores SR250 y NCJ29D6 durante la etapa de despliegue.
-	\item El conjunto de datos eWINE permanece disponible en su repositorio público y sus condiciones de uso no se modifican de manera restrictiva.
-	\item La respuesta al impulso del canal contiene información suficiente para discriminar las condiciones LoS y NLoS con la exactitud objetivo, tal como reportan los trabajos publicados sobre el mismo conjunto de datos.
-	\item Las herramientas de código abierto empleadas, entre ellas TensorFlow, LiteRT for Microcontrollers y CMSIS-NN, conservan sus licencias permisivas actuales.
-	\item El equipamiento de cómputo disponible resulta suficiente para entrenar los modelos previstos, cuyo tamaño es reducido, sin necesidad de contratar infraestructura en la nube.
+    \item El alumno dispone de al menos 16 horas semanales durante los períodos activos del cronograma, y de las condiciones de salud necesarias para sostener esa dedicación.
+    \item MobileKnowledge mantiene el interés en el proyecto y la asignación del cliente durante todo el período, sin que un cambio de prioridades comerciales interrumpa las instancias de revisión.
+    \item La empresa provee la placa de evaluación con un SoC basado en ARM Cortex-M33 y su cadena de compilación durante toda la etapa de despliegue.
+    \item NXP Semiconductors mantiene disponibles, sin cambios incompatibles, el SDK, las herramientas de desarrollo y la documentación de los transceptores SR250 y NCJ29D6 durante la etapa de despliegue.
+    \item El conjunto de datos eWINE permanece disponible en su repositorio público y sus condiciones de uso no se modifican de manera restrictiva.
+    \item La respuesta al impulso del canal contiene información suficiente para discriminar las condiciones LoS y NLoS con la exactitud objetivo, tal como reportan los trabajos publicados sobre el mismo conjunto de datos.
+    \item Las herramientas de código abierto empleadas, entre ellas TensorFlow, LiteRT for Microcontrollers y CMSIS-NN, conservan sus licencias permisivas actuales.
+    \item El equipamiento de cómputo disponible resulta suficiente para entrenar los modelos previstos, cuyo tamaño es reducido, sin necesidad de contratar infraestructura en la nube.
 \end{itemize}
 
 \ifnum\revision>1
@@ -299,9 +302,9 @@ El Product Backlog se organiza en cuatro épicas que se corresponden con los blo
 \textbf{Criterio de cálculo de los Story Points.} Cada historia de usuario se puntúa en tres dimensiones, con valores enteros de 1 a 5:
 
 \begin{itemize}
-	\item Dificultad (D): cantidad de trabajo involucrado.
-	\item Complejidad (C): nivel técnico o sofisticación de la solución.
-	\item Incertidumbre (I): nivel de riesgo o de novedad respecto de la experiencia previa.
+    \item Dificultad (D): cantidad de trabajo involucrado.
+    \item Complejidad (C): nivel técnico o sofisticación de la solución.
+    \item Incertidumbre (I): nivel de riesgo o de novedad respecto de la experiencia previa.
 \end{itemize}
 
 La suma de las tres dimensiones se redondea al valor superior más cercano de la serie de Fibonacci (1, 2, 3, 5, 8, 13, 21, 34). Por ejemplo, una historia que suma 12 puntos recibe 13 Story Points. Los Story Points expresan el tamaño relativo de una historia frente a las demás y no se equiparan con horas de trabajo.
@@ -309,9 +312,9 @@ La suma de las tres dimensiones se redondea al valor superior más cercano de la
 \textbf{Criterio de prioridad.} Cada historia de usuario recibe una de tres prioridades:
 
 \begin{itemize}
-	\item Alta: sin ella el prototipo comprometido en el acta de constitución no puede construirse o no puede verificarse, o bien sostiene un plan de mitigación de la sección~\ref{sec:riesgos}.
-	\item Media: mejora la calidad o la solidez del resultado y, ante un atraso, admite reducir su alcance sin comprometer el entregable.
-	\item Baja: es opcional y se ejecuta solo si el cronograma lo permite.
+    \item Alta: sin ella el prototipo comprometido en el acta de constitución no puede construirse o no puede verificarse, o bien sostiene un plan de mitigación de la sección~\ref{sec:riesgos}.
+    \item Media: mejora la calidad o la solidez del resultado y, ante un atraso, admite reducir su alcance sin comprometer el entregable.
+    \item Baja: es opcional y se ejecuta solo si el cronograma lo permite.
 \end{itemize}
 
 El orden de ejecución no sigue estrictamente la prioridad, porque dos historias de prioridad media producen insumos que las siguientes necesitan: HU2 define el esquema de partición con el que se evalúan los modelos, y HU4 fija el ancho de ventana con el que se entrenan. En ambos casos, reducir el alcance significa acotar el análisis, no omitir el insumo.
@@ -319,31 +322,31 @@ El orden de ejecución no sigue estrictamente la prioridad, porque dos historias
 \subsection{Épica 1: ingesta y comprensión de los datos}
 
 \begin{itemize}
-	\item \textbf{HU1.} Como desarrollador de modelos, quiero disponer de un flujo reproducible que convierta el conjunto de datos eWINE en tensores de CIR etiquetados, para entrenar modelos sin repetir el trabajo de preparación en cada experimento. Prioridad alta.
-	\item \textbf{HU2.} Como desarrollador de modelos, quiero un análisis exploratorio de las CIR discriminado por clase y por entorno, para identificar sesgos de distribución y definir un esquema de partición que permita medir la generalización. Prioridad media.
+    \item \textbf{HU1.} Como desarrollador de modelos, quiero disponer de un flujo reproducible que convierta el conjunto de datos eWINE en tensores de CIR etiquetados, para entrenar modelos sin repetir el trabajo de preparación en cada experimento. Prioridad alta.
+    \item \textbf{HU2.} Como desarrollador de modelos, quiero un análisis exploratorio de las CIR discriminado por clase y por entorno, para identificar sesgos de distribución y definir un esquema de partición que permita medir la generalización. Prioridad media.
 \end{itemize}
 
 \subsection{Épica 2: preprocesamiento y representación de la CIR}
 
 \begin{itemize}
-	\item \textbf{HU3.} Como desarrollador de modelos, quiero alinear cada CIR respecto de su primer camino detectado y normalizar su amplitud, para que el modelo aprenda la forma del perfil de multitrayecto y no la posición absoluta de la ventana de captura. Prioridad alta.
-	\item \textbf{HU4.} Como desarrollador de modelos, quiero reducir la ventana de CIR al menor número de muestras que preserve la exactitud, para acotar la memoria de trabajo que el modelo requiere en el dispositivo. Prioridad media.
+    \item \textbf{HU3.} Como desarrollador de modelos, quiero alinear cada CIR respecto de su primer camino detectado y normalizar su amplitud, para que el modelo aprenda la forma del perfil de multitrayecto y no la posición absoluta de la ventana de captura. Prioridad alta.
+    \item \textbf{HU4.} Como desarrollador de modelos, quiero reducir la ventana de CIR al menor número de muestras que preserve la exactitud, para acotar la memoria de trabajo que el modelo requiere en el dispositivo. Prioridad media.
 \end{itemize}
 
 \subsection{Épica 3: modelado y optimización para el sistema embebido}
 
 \begin{itemize}
-	\item \textbf{HU5.} Como desarrollador de modelos, quiero entrenar una red convolucional unidimensional sobre las CIR preprocesadas, para obtener una línea base de clasificación entre LoS y NLoS contra la cual comparar las variantes posteriores. Prioridad alta.
-	\item \textbf{HU6.} Como desarrollador de modelos, quiero explorar variantes de arquitectura sujetas a un presupuesto de memoria explícito, para elegir el mejor compromiso entre exactitud y tamaño del modelo. Prioridad alta.
-	\item \textbf{HU7.} Como desarrollador de firmware, quiero cuantizar el modelo seleccionado a enteros de 8 bits, para reducir su ocupación en memoria de programa y habilitar la ejecución acelerada con CMSIS-NN. Prioridad alta.
+    \item \textbf{HU5.} Como desarrollador de modelos, quiero entrenar una red convolucional unidimensional sobre las CIR preprocesadas, para obtener una línea base de clasificación entre LoS y NLoS contra la cual comparar las variantes posteriores. Prioridad alta.
+    \item \textbf{HU6.} Como desarrollador de modelos, quiero explorar variantes de arquitectura sujetas a un presupuesto de memoria explícito, para elegir el mejor compromiso entre exactitud y tamaño del modelo. Prioridad alta.
+    \item \textbf{HU7.} Como desarrollador de firmware, quiero cuantizar el modelo seleccionado a enteros de 8 bits, para reducir su ocupación en memoria de programa y habilitar la ejecución acelerada con CMSIS-NN. Prioridad alta.
 \end{itemize}
 
 \subsection{Épica 4: despliegue y validación sobre el sistema embebido}
 
 \begin{itemize}
-	\item \textbf{HU8.} Como desarrollador de firmware, quiero ejecutar el modelo cuantizado sobre el SoC basado en ARM Cortex-M33, para verificar que la inferencia entra en la memoria disponible y responde dentro del tiempo requerido. Prioridad alta.
-	\item \textbf{HU9.} Como desarrollador de firmware, quiero medir y comparar la memoria ocupada, la latencia y la exactitud entre la computadora personal y el dispositivo, para demostrar que la degradación introducida por la cuantización se mantiene acotada. Prioridad alta.
-	\item \textbf{HU10.} Como responsable técnico del producto, quiero comparar el detector basado en aprendizaje profundo contra el criterio determinista de referencia, para cuantificar la mejora que aporta la solución propuesta. Prioridad baja. Historia opcional.
+    \item \textbf{HU8.} Como desarrollador de firmware, quiero ejecutar el modelo cuantizado sobre el SoC basado en ARM Cortex-M33, para verificar que la inferencia entra en la memoria disponible y responde dentro del tiempo requerido. Prioridad alta.
+    \item \textbf{HU9.} Como desarrollador de firmware, quiero medir y comparar la memoria ocupada, la latencia y la exactitud entre la computadora personal y el dispositivo, para demostrar que la degradación introducida por la cuantización se mantiene acotada. Prioridad alta.
+    \item \textbf{HU10.} Como responsable técnico del producto, quiero comparar el detector basado en aprendizaje profundo contra el criterio determinista de referencia, para cuantificar la mejora que aporta la solución propuesta. Prioridad baja. Historia opcional.
 \end{itemize}
 
 En la tabla \ref{tab:storypoints} se presenta la ponderación de cada historia de usuario.
@@ -380,89 +383,89 @@ HU10 & Despliegue y validación & 2 & 3 & 3 & 8 & 8 & Baja (opcional) \\ \hline
 
 \textbf{Criterios de aceptación de HU1}
 \begin{itemize}
-	\item El flujo procesa la totalidad de los registros del conjunto de datos y finaliza en menos de 5 minutos sobre la computadora de desarrollo.
-	\item Dos ejecuciones con la misma semilla producen particiones de entrenamiento, validación y prueba idénticas, verificadas por la suma de verificación de los índices.
-	\item El conjunto de prueba conserva la proporción entre las clases LoS y NLoS del conjunto original con una diferencia no mayor a 1 punto porcentual.
-	\item El flujo aborta con un mensaje explícito si alguno de los siete subconjuntos de origen falta o presenta un número de columnas distinto del esperado.
+    \item El flujo procesa la totalidad de los registros del conjunto de datos y finaliza en menos de 5 minutos sobre la computadora de desarrollo.
+    \item Dos ejecuciones con la misma semilla producen particiones de entrenamiento, validación y prueba idénticas, verificadas por la suma de verificación de los índices.
+    \item El conjunto de prueba conserva la proporción entre las clases LoS y NLoS del conjunto original con una diferencia no mayor a 1 punto porcentual.
+    \item El flujo aborta con un mensaje explícito si alguno de los siete subconjuntos de origen falta o presenta un número de columnas distinto del esperado.
 \end{itemize}
 
 \textbf{Criterios de aceptación de HU2}
 \begin{itemize}
-	\item El informe de análisis presenta, para cada uno de los siete entornos, el número de muestras por clase y las estadísticas descriptivas de las métricas de canal.
-	\item El informe incluye la CIR promedio y las bandas de percentiles 10 y 90 para cada clase y cada entorno.
-	\item El informe cuantifica el desbalance entre entornos y enuncia de manera explícita los sesgos detectados y su efecto previsible sobre la generalización.
-	\item El informe se regenera de manera automática a partir del flujo de datos, sin pasos manuales.
+    \item El informe de análisis presenta, para cada uno de los siete entornos, el número de muestras por clase y las estadísticas descriptivas de las métricas de canal.
+    \item El informe incluye la CIR promedio y las bandas de percentiles 10 y 90 para cada clase y cada entorno.
+    \item El informe cuantifica el desbalance entre entornos y enuncia de manera explícita los sesgos detectados y su efecto previsible sobre la generalización.
+    \item El informe se regenera de manera automática a partir del flujo de datos, sin pasos manuales.
 \end{itemize}
 
 \subsection{Épica 2: preprocesamiento y representación de la CIR}
 
 \textbf{Criterios de aceptación de HU3}
 \begin{itemize}
-	\item El módulo de alineación ubica el primer camino en la misma posición de la ventana para el 100 \% de las muestras procesadas.
-	\item Cada CIR normalizada presenta energía unitaria, lo cual se verifica con una tolerancia relativa de $10^{-6}$.
-	\item Se documenta la comparación de exactitud entre al menos dos esquemas de normalización sobre un clasificador de referencia, con la misma partición y la misma semilla.
-	\item El preprocesamiento se expresa como una transformación encadenable, aplicable de manera idéntica en entrenamiento y en inferencia.
+    \item El módulo de alineación ubica el primer camino en la misma posición de la ventana para el 100 \% de las muestras procesadas.
+    \item Cada CIR normalizada presenta energía unitaria, lo cual se verifica con una tolerancia relativa de $10^{-6}$.
+    \item Se documenta la comparación de exactitud entre al menos dos esquemas de normalización sobre un clasificador de referencia, con la misma partición y la misma semilla.
+    \item El preprocesamiento se expresa como una transformación encadenable, aplicable de manera idéntica en entrenamiento y en inferencia.
 \end{itemize}
 
 \textbf{Criterios de aceptación de HU4}
 \begin{itemize}
-	\item Se ejecuta un barrido de anchos de ventana con al menos cuatro valores comprendidos entre 32 y 256 muestras.
-	\item Para cada ancho se registra la exactitud de validación y la memoria de trabajo requerida, expresada en bytes.
-	\item El ancho seleccionado no reduce la exactitud de validación en más de 1 punto porcentual respecto del mejor valor del barrido.
-	\item La decisión adoptada queda documentada junto con la curva de compromiso entre exactitud y memoria.
+    \item Se ejecuta un barrido de anchos de ventana con al menos cuatro valores comprendidos entre 32 y 256 muestras.
+    \item Para cada ancho se registra la exactitud de validación y la memoria de trabajo requerida, expresada en bytes.
+    \item El ancho seleccionado no reduce la exactitud de validación en más de 1 punto porcentual respecto del mejor valor del barrido.
+    \item La decisión adoptada queda documentada junto con la curva de compromiso entre exactitud y memoria.
 \end{itemize}
 
 \subsection{Épica 3: modelado y optimización para el sistema embebido}
 
 \textbf{Criterios de aceptación de HU5}
 \begin{itemize}
-	\item La red convolucional alcanza un valor de F1 igual o superior a 0,88 sobre el conjunto de prueba con partición estratificada.
-	\item Se reportan exactitud, precisión, exhaustividad, F1, área bajo la curva ROC (del inglés \textit{receiver operating characteristic}) y matriz de confusión.
-	\item La red supera en F1 a los dos modelos de comparación entrenados sobre las métricas de canal.
-	\item Los resultados se reproducen a partir del registro de experimentos, que conserva la configuración, la semilla y los pesos de cada ejecución.
+    \item La red convolucional alcanza un valor de F1 igual o superior a 0,88 sobre el conjunto de prueba con partición estratificada.
+    \item Se reportan exactitud, precisión, exhaustividad, F1, área bajo la curva ROC (del inglés \textit{receiver operating characteristic}) y matriz de confusión.
+    \item La red supera en F1 a los dos modelos de comparación entrenados sobre las métricas de canal.
+    \item Los resultados se reproducen a partir del registro de experimentos, que conserva la configuración, la semilla y los pesos de cada ejecución.
 \end{itemize}
 
 \textbf{Criterios de aceptación de HU6}
 \begin{itemize}
-	\item La búsqueda evalúa al menos doce configuraciones con distinta profundidad, número de filtros y tamaño de núcleo.
-	\item Toda configuración evaluada respeta el presupuesto de memoria fijado, y las que lo exceden se descartan de manera automática antes de entrenarse.
-	\item Se construye la frontera de compromiso entre exactitud y tamaño del modelo, y la arquitectura elegida se justifica sobre esa frontera.
-	\item El modelo podado conserva un valor de F1 que no cae más de 1 punto porcentual respecto del modelo denso equivalente.
+    \item La búsqueda evalúa al menos doce configuraciones con distinta profundidad, número de filtros y tamaño de núcleo.
+    \item Toda configuración evaluada respeta el presupuesto de memoria fijado, y las que lo exceden se descartan de manera automática antes de entrenarse.
+    \item Se construye la frontera de compromiso entre exactitud y tamaño del modelo, y la arquitectura elegida se justifica sobre esa frontera.
+    \item El modelo podado conserva un valor de F1 que no cae más de 1 punto porcentual respecto del modelo denso equivalente.
 \end{itemize}
 
 \textbf{Criterios de aceptación de HU7}
 \begin{itemize}
-	\item El modelo cuantizado ocupa 64 kB de memoria de programa o menos.
-	\item La caída de F1 del modelo cuantizado respecto del modelo en punto flotante no supera los 2 puntos porcentuales sobre el conjunto de prueba.
-	\item La totalidad de los operadores del grafo cuantizado pertenece al conjunto que implementa LiteRT for Microcontrollers, condición sin la cual el modelo no se ejecuta en el dispositivo. Se verifica con la herramienta de inspección del grafo.
-	\item Las operaciones que concentran el cómputo, convoluciones y capas densas, se resuelven con los núcleos optimizados de CMSIS-NN y no con las implementaciones de referencia, lo que se verifica con el perfilador de operadores del intérprete.
-	\item El procedimiento de cuantización queda documentado, incluida la composición del conjunto representativo utilizado para la calibración.
+    \item El modelo cuantizado ocupa 64 kB de memoria de programa o menos.
+    \item La caída de F1 del modelo cuantizado respecto del modelo en punto flotante no supera los 2 puntos porcentuales sobre el conjunto de prueba.
+    \item La totalidad de los operadores del grafo cuantizado pertenece al conjunto que implementa LiteRT for Microcontrollers, condición sin la cual el modelo no se ejecuta en el dispositivo. Se verifica con la herramienta de inspección del grafo.
+    \item Las operaciones que concentran el cómputo, convoluciones y capas densas, se resuelven con los núcleos optimizados de CMSIS-NN y no con las implementaciones de referencia, lo que se verifica con el perfilador de operadores del intérprete.
+    \item El procedimiento de cuantización queda documentado, incluida la composición del conjunto representativo utilizado para la calibración.
 \end{itemize}
 
 \subsection{Épica 4: despliegue y validación sobre el sistema embebido}
 
 \textbf{Criterios de aceptación de HU8}
 \begin{itemize}
-	\item El firmware compila sin advertencias y se graba en la placa de evaluación siguiendo el procedimiento documentado.
-	\item La memoria de trabajo del intérprete se dimensiona de manera explícita y el firmware informa por consola el valor efectivamente utilizado.
-	\item El banco de pruebas inyecta al menos 100 CIR almacenadas y devuelve la clase inferida por cada una a través del puerto serie.
-	\item El firmware ejecuta 1000 inferencias consecutivas sin reinicios ni desbordamientos de pila.
+    \item El firmware compila sin advertencias y se graba en la placa de evaluación siguiendo el procedimiento documentado.
+    \item La memoria de trabajo del intérprete se dimensiona de manera explícita y el firmware informa por consola el valor efectivamente utilizado.
+    \item El banco de pruebas inyecta al menos 100 CIR almacenadas y devuelve la clase inferida por cada una a través del puerto serie.
+    \item El firmware ejecuta 1000 inferencias consecutivas sin reinicios ni desbordamientos de pila.
 \end{itemize}
 
 \textbf{Criterios de aceptación de HU9}
 \begin{itemize}
-	\item Se reportan la memoria de programa y la memoria de trabajo ocupadas, obtenidas del mapa de memoria del enlazador.
-	\item Se reporta la latencia de inferencia como mediana y percentil 95 sobre al menos 1000 repeticiones, medida con el contador de ciclos del procesador.
-	\item La latencia mediana resulta igual o menor a 10 ms.
-	\item La clase inferida en el dispositivo coincide con la inferida en la computadora personal en al menos el 99 \% de las muestras del conjunto de prueba, y las discrepancias quedan analizadas.
+    \item Se reportan la memoria de programa y la memoria de trabajo ocupadas, obtenidas del mapa de memoria del enlazador.
+    \item Se reporta la latencia de inferencia como mediana y percentil 95 sobre al menos 1000 repeticiones, medida con el contador de ciclos del procesador.
+    \item La latencia mediana resulta igual o menor a 10 ms.
+    \item La clase inferida en el dispositivo coincide con la inferida en la computadora personal en al menos el 99 \% de las muestras del conjunto de prueba, y las discrepancias quedan analizadas.
 \end{itemize}
 
 \textbf{Criterios de aceptación de HU10}
 \begin{itemize}
-	\item Se obtiene el indicador determinista de referencia para la totalidad del conjunto de prueba.
-	\item Se presentan las matrices de confusión y las curvas ROC de ambos criterios sobre el mismo conjunto de prueba.
-	\item La comparación se acompaña de un intervalo de confianza del 95 \% para la diferencia de F1 entre ambos criterios.
-	\item Las conclusiones distinguen de manera explícita los casos en los que el criterio determinista resulta preferible.
+    \item Se obtiene el indicador determinista de referencia para la totalidad del conjunto de prueba.
+    \item Se presentan las matrices de confusión y las curvas ROC de ambos criterios sobre el mismo conjunto de prueba.
+    \item La comparación se acompaña de un intervalo de confianza del 95 \% para la diferencia de F1 entre ambos criterios.
+    \item Las conclusiones distinguen de manera explícita los casos en los que el criterio determinista resulta preferible.
 \end{itemize}
 \else\input{plantilla/07-criterios-aceptacion}\fi
 
@@ -477,9 +480,9 @@ El objetivo es aumentar la exactitud de la medición de distancia en enlaces UWB
 Se adoptan tres métricas de éxito conjuntas, que deben cumplirse de manera simultánea:
 
 \begin{itemize}
-	\item Un valor de F1 igual o superior a 0,85 para el modelo desplegado, en la clasificación entre LoS y NLoS sobre el conjunto de prueba.
-	\item Una ocupación de memoria de programa igual o menor a 64 kB para el modelo cuantizado.
-	\item Una latencia de inferencia mediana igual o menor a 10 ms sobre el SoC basado en ARM Cortex-M33.
+    \item Un valor de F1 igual o superior a 0,85 para el modelo desplegado, en la clasificación entre LoS y NLoS sobre el conjunto de prueba.
+    \item Una ocupación de memoria de programa igual o menor a 64 kB para el modelo cuantizado.
+    \item Una latencia de inferencia mediana igual o menor a 10 ms sobre el SoC basado en ARM Cortex-M33.
 \end{itemize}
 
 El umbral de F1 se fija en relación con el estado del arte. Qi et al.\footnote{Véase la referencia citada en la nota 1 (Qi et al., 2025).} reportan una exactitud de 92,19~\% sobre el mismo conjunto de datos, con un modelo que combina capas convolucionales, una capa recurrente y un mecanismo de atención, concebido para ejecutarse fuera del chip. El presente proyecto persigue un modelo restringido a 64 kB y cuantizado a enteros de 8 bits, condiciones que previsiblemente implican una pérdida de exactitud. Por ese motivo el objetivo no es igualar ese resultado, sino acotar la brecha: un F1 de 0,85 equivale a una diferencia de alrededor de siete puntos porcentuales, que es el costo que se acepta a cambio de habilitar la inferencia dentro del dispositivo. Como el conjunto de datos está balanceado entre clases, F1 y exactitud toman valores próximos, lo que vuelve razonable la comparación.
@@ -499,12 +502,12 @@ Respecto de la calidad, el conjunto se encuentra balanceado y no presenta valore
 Se aplican las siguientes técnicas, cada una con su justificación:
 
 \begin{itemize}
-	\item Alineación de la CIR respecto del índice del primer camino. La posición absoluta del primer camino dentro de la ventana de captura depende del instante de sincronización y no de la condición de propagación, de modo que su eliminación evita que el modelo aprenda una característica espuria.
-	\item Normalización de amplitud por energía de la señal. La potencia recibida varía con la distancia y con la ganancia del receptor, magnitudes ajenas a la condición LoS o NLoS. La normalización deja al modelo la forma del perfil de multitrayecto, que es la característica discriminante.
-	\item Recorte de la ventana alrededor del primer camino. La información útil se concentra en las decenas de muestras posteriores al primer camino, mientras que el resto de la traza aporta ruido y consume memoria, recurso escaso en el dispositivo de destino.
-	\item Escalado al rango de enteros con signo de 8 bits. Aproxima durante el entrenamiento la representación que el modelo usará en el dispositivo y reduce la degradación posterior por cuantización.
-	\item Partición estratificada por clase y validación con exclusión de un entorno completo. La partición estratificada mide el desempeño en condiciones conocidas, mientras que la exclusión de un entorno completo mide la capacidad de generalizar a un escenario no visto, que es el caso de uso real.
-	\item Aumentación por adición de ruido gaussiano y por desplazamiento de la ventana en pocas muestras. Ambas transformaciones representan perturbaciones que el receptor introduce en operación y mejoran la tolerancia del modelo a errores de detección del primer camino.
+    \item Alineación de la CIR respecto del índice del primer camino. La posición absoluta del primer camino dentro de la ventana de captura depende del instante de sincronización y no de la condición de propagación, de modo que su eliminación evita que el modelo aprenda una característica espuria.
+    \item Normalización de amplitud por energía de la señal. La potencia recibida varía con la distancia y con la ganancia del receptor, magnitudes ajenas a la condición LoS o NLoS. La normalización deja al modelo la forma del perfil de multitrayecto, que es la característica discriminante.
+    \item Recorte de la ventana alrededor del primer camino. La información útil se concentra en las decenas de muestras posteriores al primer camino, mientras que el resto de la traza aporta ruido y consume memoria, recurso escaso en el dispositivo de destino.
+    \item Escalado al rango de enteros con signo de 8 bits. Aproxima durante el entrenamiento la representación que el modelo usará en el dispositivo y reduce la degradación posterior por cuantización.
+    \item Partición estratificada por clase y validación con exclusión de un entorno completo. La partición estratificada mide el desempeño en condiciones conocidas, mientras que la exclusión de un entorno completo mide la capacidad de generalizar a un escenario no visto, que es el caso de uso real.
+    \item Aumentación por adición de ruido gaussiano y por desplazamiento de la ventana en pocas muestras. Ambas transformaciones representan perturbaciones que el receptor introduce en operación y mejoran la tolerancia del modelo a errores de detección del primer camino.
 \end{itemize}
 
 \subsection{Modelado}
@@ -731,20 +734,20 @@ En la figura \ref{fig:gantt} se presenta el diagrama de Gantt del proyecto, cons
 \begin{figure}[H]
 \centering
 \begin{ganttchart}[
-	hgrid,
-	vgrid={*{1}{draw=black!12}},
-	x unit=0.212cm,
-	y unit title=0.55cm,
-	y unit chart=0.52cm,
-	title height=1,
-	title label font=\tiny,
-	bar label font=\scriptsize,
-	milestone label font=\scriptsize,
-	bar height=0.62,
-	bar top shift=0.19,
-	bar/.append style={fill=colorTecnico, draw=black!45, line width=0.4pt},
-	milestone/.append style={fill=colorHito, draw=black!55, line width=0.4pt},
-	]{1}{64}
+    hgrid,
+    vgrid={*{1}{draw=black!12}},
+    x unit=0.212cm,
+    y unit title=0.55cm,
+    y unit chart=0.52cm,
+    title height=1,
+    title label font=\tiny,
+    bar label font=\scriptsize,
+    milestone label font=\scriptsize,
+    bar height=0.62,
+    bar top shift=0.19,
+    bar/.append style={fill=colorTecnico, draw=black!45, line width=0.4pt},
+    milestone/.append style={fill=colorHito, draw=black!55, line width=0.4pt},
+    ]{1}{64}
 
 \gantttitle{2026}{19}
 \gantttitle{2027}{45} \\
@@ -832,10 +835,10 @@ Un segundo riesgo es el uso del componente fuera de su dominio de validez. Un mo
 \textbf{Medidas de mitigación y mecanismos de confianza.} Se adoptan las siguientes medidas:
 
 \begin{itemize}
-	\item El detector no se propone como criterio único de seguridad. La documentación establece que debe combinarse con el criterio determinista del transceptor, de manera que una discrepancia entre ambos derive en el descarte de la medición.
-	\item Se acompaña el modelo con una ficha técnica que declara el hardware de origen de los datos, los entornos representados, las métricas discriminadas por entorno y los usos para los que el modelo no fue validado.
-	\item Se conserva la trazabilidad completa entre datos, experimentos y artefactos de modelo, de manera que cualquier resultado publicado pueda auditarse y reproducirse.
-	\item Se reporta la exhaustividad sobre la clase NLoS como métrica de seguimiento prioritaria, por ser la que gobierna el riesgo asimétrico descrito.
+    \item El detector no se propone como criterio único de seguridad. La documentación establece que debe combinarse con el criterio determinista del transceptor, de manera que una discrepancia entre ambos derive en el descarte de la medición.
+    \item Se acompaña el modelo con una ficha técnica que declara el hardware de origen de los datos, los entornos representados, las métricas discriminadas por entorno y los usos para los que el modelo no fue validado.
+    \item Se conserva la trazabilidad completa entre datos, experimentos y artefactos de modelo, de manera que cualquier resultado publicado pueda auditarse y reproducirse.
+    \item Se reporta la exhaustividad sobre la clase NLoS como métrica de seguimiento prioritaria, por ser la que gobierna el riesgo asimétrico descrito.
 \end{itemize}
 
 \textbf{Reflexión general.} El proyecto no toma decisiones sobre personas ni las clasifica: opera sobre una medición física de un canal de radio. Su dimensión ética no se ubica, por lo tanto, en la equidad del trato entre individuos, sino en la honestidad respecto de los límites de validez del sistema. Un modelo que declara una exactitud alta obtenida sobre siete entornos de un único tipo de construcción, presentado sin esa aclaración, induce a quien lo integre a confiar en una garantía que no existe. La transparencia sobre el dominio de validez, la publicación de métricas discriminadas y la recomendación explícita de no usar el detector como barrera de seguridad aislada son, en este proyecto, las obligaciones éticas centrales. En cuanto al impacto social, la mejora de la exactitud del posicionamiento en interiores tiene aplicaciones que van desde la seguridad de trabajadores en entornos industriales hasta la asistencia a personas con movilidad reducida, y el mismo aumento de precisión habilita formas más finas de seguimiento de personas, lo que refuerza la necesidad de las salvaguardas de protección de datos señaladas en la subsección anterior.
@@ -849,50 +852,50 @@ Un segundo riesgo es el uso del componente fuera de su dominio de validez. Un mo
 
 \textbf{Riesgo 1:} las trazas del conjunto de datos provienen de un modelo de transceptor distinto del que se emplea en el sistema de destino, de modo que el modelo entrenado podría no transferirse a las CIR que entregan los transceptores de la familia de destino.
 \begin{itemize}
-	\item Severidad (S): 8. Si la transferencia falla, el resultado principal del proyecto pierde valor para la empresa, porque el modelo funcionaría solo sobre datos ajenos al hardware que se pretende mejorar. Obligaría a reformular la validación del prototipo y comprometería la conclusión central del trabajo.
-	\item Probabilidad de ocurrencia (O): 6. Las diferencias entre receptores en resolución temporal, ancho de banda efectivo y escalado de amplitud son conocidas y significativas, y no se dispone de trazas del hardware de destino para verificar la transferencia de manera anticipada.
+    \item Severidad (S): 8. Si la transferencia falla, el resultado principal del proyecto pierde valor para la empresa, porque el modelo funcionaría solo sobre datos ajenos al hardware que se pretende mejorar. Obligaría a reformular la validación del prototipo y comprometería la conclusión central del trabajo.
+    \item Probabilidad de ocurrencia (O): 6. Las diferencias entre receptores en resolución temporal, ancho de banda efectivo y escalado de amplitud son conocidas y significativas, y no se dispone de trazas del hardware de destino para verificar la transferencia de manera anticipada.
 \end{itemize}
 
 \textbf{Riesgo 2:} el modelo cuantizado excede la memoria disponible en la plataforma de destino.
 \begin{itemize}
-	\item Severidad (S): 7. El incumplimiento afecta de manera directa una de las tres métricas de éxito del proyecto y obliga a rehacer la etapa de modelado con una arquitectura menor, con el consiguiente reproceso de las etapas posteriores.
-	\item Probabilidad de ocurrencia (O): 5. El presupuesto de memoria es exigente y la memoria de trabajo del intérprete resulta difícil de estimar con precisión antes de compilar, aunque la restricción se incorpora desde el diseño de la búsqueda de arquitectura.
+    \item Severidad (S): 7. El incumplimiento afecta de manera directa una de las tres métricas de éxito del proyecto y obliga a rehacer la etapa de modelado con una arquitectura menor, con el consiguiente reproceso de las etapas posteriores.
+    \item Probabilidad de ocurrencia (O): 5. El presupuesto de memoria es exigente y la memoria de trabajo del intérprete resulta difícil de estimar con precisión antes de compilar, aunque la restricción se incorpora desde el diseño de la búsqueda de arquitectura.
 \end{itemize}
 
 \textbf{Riesgo 3:} no se dispone de la placa de evaluación al comienzo de la etapa de despliegue, por demoras en el aprovisionamiento.
 \begin{itemize}
-	\item Severidad (S): 9. La épica de despliegue queda bloqueada por completo y el proyecto no puede alcanzar el prototipo comprometido en el acta de constitución, que es su entregable diferencial.
-	\item Probabilidad de ocurrencia (O): 2. La empresa provee el hardware y es socio de nivel gold del fabricante, condición que le da un canal de aprovisionamiento directo. El antecedente disponible es un pedido recibido dentro de las dos semanas.
+    \item Severidad (S): 9. La épica de despliegue queda bloqueada por completo y el proyecto no puede alcanzar el prototipo comprometido en el acta de constitución, que es su entregable diferencial.
+    \item Probabilidad de ocurrencia (O): 2. La empresa provee el hardware y es socio de nivel gold del fabricante, condición que le da un canal de aprovisionamiento directo. El antecedente disponible es un pedido recibido dentro de las dos semanas.
 \end{itemize}
 
 \textbf{Riesgo 4:} la cuantización a enteros de 8 bits degrada la exactitud por encima del umbral aceptado.
 \begin{itemize}
-	\item Severidad (S): 6. La degradación obliga a incorporar entrenamiento consciente de la cuantización, lo que implica reprocesar el entrenamiento del modelo seleccionado, pero no invalida el resultado ni el resto de la planificación.
-	\item Probabilidad de ocurrencia (O): 5. Las redes convolucionales pequeñas suelen tolerar bien la cuantización, aunque el rango dinámico elevado de las CIR aumenta la sensibilidad a la elección de las escalas.
+    \item Severidad (S): 6. La degradación obliga a incorporar entrenamiento consciente de la cuantización, lo que implica reprocesar el entrenamiento del modelo seleccionado, pero no invalida el resultado ni el resto de la planificación.
+    \item Probabilidad de ocurrencia (O): 5. Las redes convolucionales pequeñas suelen tolerar bien la cuantización, aunque el rango dinámico elevado de las CIR aumenta la sensibilidad a la elección de las escalas.
 \end{itemize}
 
 \textbf{Riesgo 5:} la disponibilidad horaria del autor se reduce de manera sostenida por incremento de la carga laboral.
 \begin{itemize}
-	\item Severidad (S): 7. Una reducción sostenida desplaza el cronograma completo y compromete la fecha de la defensa pública, que es una restricción externa y no negociable.
-	\item Probabilidad de ocurrencia (O): 7. El proyecto se ejecuta durante 64 semanas en paralelo con una actividad profesional de tiempo completo sujeta a ciclos de entrega de producto, por lo que la aparición de al menos un período de sobrecarga es esperable.
+    \item Severidad (S): 7. Una reducción sostenida desplaza el cronograma completo y compromete la fecha de la defensa pública, que es una restricción externa y no negociable.
+    \item Probabilidad de ocurrencia (O): 7. El proyecto se ejecuta durante 64 semanas en paralelo con una actividad profesional de tiempo completo sujeta a ciclos de entrega de producto, por lo que la aparición de al menos un período de sobrecarga es esperable.
 \end{itemize}
 
 \textbf{Riesgo 6:} un cambio de prioridades comerciales de la empresa deja sin asignación al cliente o al equipo de apoyo.
 \begin{itemize}
-	\item Severidad (S): 6. Se pierde la instancia de validación de los entregables y el acceso al conocimiento de dominio, lo que degrada la calidad de las decisiones técnicas respecto UWB, al quedar sin revisión experta, sin impedir la ejecución del proyecto.
-	\item Probabilidad de ocurrencia (O): 4. El proyecto está alineado con una línea de interés de la empresa, aunque su prioridad es menor que la de los desarrollos con compromiso comercial.
+    \item Severidad (S): 6. Se pierde la instancia de validación de los entregables y el acceso al conocimiento de dominio, lo que degrada la calidad de las decisiones técnicas respecto UWB, al quedar sin revisión experta, sin impedir la ejecución del proyecto.
+    \item Probabilidad de ocurrencia (O): 4. El proyecto está alineado con una línea de interés de la empresa, aunque su prioridad es menor que la de los desarrollos con compromiso comercial.
 \end{itemize}
 
 \textbf{Riesgo 7:} el conjunto de datos público deja de estar disponible o modifica sus condiciones de uso.
 \begin{itemize}
-	\item Severidad (S): 5. Una copia local versionada permite continuar el trabajo técnico, aunque un cambio restrictivo de licencia obligaría a revisar las condiciones de publicación de los resultados.
-	\item Probabilidad de ocurrencia (O): 2. El repositorio se mantiene publicado desde hace varios años y corresponde a un proyecto de investigación finalizado, situación en la que los cambios de condiciones son infrecuentes.
+    \item Severidad (S): 5. Una copia local versionada permite continuar el trabajo técnico, aunque un cambio restrictivo de licencia obligaría a revisar las condiciones de publicación de los resultados.
+    \item Probabilidad de ocurrencia (O): 2. El repositorio se mantiene publicado desde hace varios años y corresponde a un proyecto de investigación finalizado, situación en la que los cambios de condiciones son infrecuentes.
 \end{itemize}
 
 \textbf{Riesgo 8:} NXP Semiconductors discontinúa o modifica de manera incompatible el SDK, las herramientas de desarrollo o la documentación de los transceptores SR250 y NCJ29D6 durante la etapa de despliegue.
 \begin{itemize}
-	\item Severidad (S): 5. Un cambio incompatible en esa etapa obligaría a adaptar el proyecto de firmware a la nueva versión, con reprocesamiento de parte de la integración y un posible atraso del prototipo. No afectaría al modelo ni al trabajo de los sprints 1 a 8, que se ejecuta en la computadora de desarrollo sin herramientas del fabricante.
-	\item Probabilidad de ocurrencia (O): 2. La exposición se limita a los sprints 9 y 10: antes de esa etapa el proyecto no usa herramientas del fabricante y puede adoptar la versión vigente al comenzarla. El SDK se distribuye por versiones, de modo que una actualización no invalida por sí misma la versión en uso, y la familia de productos se encuentra vigente y con demanda comercial activa, lo que hace improbable su discontinuación en ese plazo.
+    \item Severidad (S): 5. Un cambio incompatible en esa etapa obligaría a adaptar el proyecto de firmware a la nueva versión, con reprocesamiento de parte de la integración y un posible atraso del prototipo. No afectaría al modelo ni al trabajo de los sprints 1 a 8, que se ejecuta en la computadora de desarrollo sin herramientas del fabricante.
+    \item Probabilidad de ocurrencia (O): 2. La exposición se limita a los sprints 9 y 10: antes de esa etapa el proyecto no usa herramientas del fabricante y puede adoptar la versión vigente al comenzarla. El SDK se distribuye por versiones, de modo que una actualización no invalida por sí misma la versión en uso, y la familia de productos se encuentra vigente y con demanda comercial activa, lo que hace improbable su discontinuación en ese plazo.
 \end{itemize}
 
 \textbf{b) Tabla de gestión de riesgos}
@@ -926,21 +929,21 @@ Nota: los valores marcados con asterisco corresponden a la situación posterior 
 
 \textbf{Riesgo 1.} El preprocesamiento se define sobre magnitudes normalizadas e independientes del receptor: la CIR se alinea respecto de su primer camino y se normaliza por energía, y se descarta el uso directo de valores absolutos de amplitud propios del transceptor de origen. Se incorpora al conjunto de entrenamiento una aumentación que simula variaciones de resolución temporal y de escalado de amplitud, de manera que el modelo tolere las diferencias entre receptores. Durante el proyecto se gestiona con la empresa la obtención de un conjunto reducido de trazas del hardware de destino, con el único fin de verificar la transferencia sobre unas pocas decenas de muestras.
 \begin{itemize}
-	\item Severidad (S*): 6. Aun cuando la transferencia resulte parcial, el trabajo conserva valor porque documenta de manera cuantitativa la brecha entre receptores y deja definido el procedimiento de readaptación, de modo que la pérdida deja de comprometer la conclusión central.
-	\item Probabilidad de ocurrencia (O*): 3. Un preprocesamiento independiente del receptor y una aumentación que representa las diferencias esperadas reducen de manera considerable la probabilidad de que el modelo dependa de características propias del transceptor de origen.
+    \item Severidad (S*): 6. Aun cuando la transferencia resulte parcial, el trabajo conserva valor porque documenta de manera cuantitativa la brecha entre receptores y deja definido el procedimiento de readaptación, de modo que la pérdida deja de comprometer la conclusión central.
+    \item Probabilidad de ocurrencia (O*): 3. Un preprocesamiento independiente del receptor y una aumentación que representa las diferencias esperadas reducen de manera considerable la probabilidad de que el modelo dependa de características propias del transceptor de origen.
 \end{itemize}
 
 \textbf{Riesgo 2.} El presupuesto de memoria se fija antes de comenzar el entrenamiento y se incorpora como restricción dura de la búsqueda de arquitectura: toda configuración que lo exceda se descarta de manera automática antes de entrenarse. Se aplica poda estructurada de filtros al modelo seleccionado y se instrumenta el cálculo de la memoria de trabajo del intérprete para cada configuración candidata, de manera de conocer el consumo real antes de la etapa de despliegue.
 \begin{itemize}
-	\item Severidad (S*): 5. Con el presupuesto verificado en cada iteración, un eventual exceso se detecta durante la búsqueda de arquitectura y no en la etapa de despliegue, de manera que el reproceso se limita a una parte del Sprint 6 en lugar de arrastrar a los sprints posteriores.
-	\item Probabilidad de ocurrencia (O*): 2. La restricción aplicada de manera automática sobre cada candidato hace poco probable que un modelo que excede la memoria llegue a la etapa de cuantización.
+    \item Severidad (S*): 5. Con el presupuesto verificado en cada iteración, un eventual exceso se detecta durante la búsqueda de arquitectura y no en la etapa de despliegue, de manera que el reproceso se limita a una parte del Sprint 6 en lugar de arrastrar a los sprints posteriores.
+    \item Probabilidad de ocurrencia (O*): 2. La restricción aplicada de manera automática sobre cada candidato hace poco probable que un modelo que excede la memoria llegue a la etapa de cuantización.
 \end{itemize}
 
 
 \textbf{Riesgo 5.} Se adopta una jornada fija y acotada de 16 horas semanales durante los sprints activos, valor sostenible en paralelo con la actividad profesional. El cronograma incorpora un receso programado de cuatro semanas y un período de contingencia de dos semanas previo al TTFA, al que se suma la capacidad libre que deja la baja carga de redacción durante los capítulos introductorios de la memoria. La historia de usuario HU10 se declara opcional y las historias HU2 y HU4, de prioridad media, admiten reducir su alcance, de manera que ante un atraso se libera carga sin afectar el entregable comprometido. El avance se controla al cierre de cada sprint mediante el porcentaje de completitud de la tabla \ref{tab:sprints}.
 \begin{itemize}
-	\item Severidad (S*): 6. La contingencia exclusiva es de dos semanas, pero la capacidad libre del TTFA, una historia opcional y dos de prioridad media que admiten reducir su alcance permiten absorber un desvío de magnitud moderada sin desplazar la fecha de la defensa. Un desvío mayor comprometería la redacción del capítulo de diseño e implementación, que depende de que el desarrollo técnico esté cerrado.
-	\item Probabilidad de ocurrencia (O*): 4. La aparición de períodos de sobrecarga laboral no se elimina, pero una jornada planificada por debajo del máximo disponible reduce la probabilidad de que esa sobrecarga se traduzca en un atraso efectivo.
+    \item Severidad (S*): 6. La contingencia exclusiva es de dos semanas, pero la capacidad libre del TTFA, una historia opcional y dos de prioridad media que admiten reducir su alcance permiten absorber un desvío de magnitud moderada sin desplazar la fecha de la defensa. Un desvío mayor comprometería la redacción del capítulo de diseño e implementación, que depende de que el desarrollo técnico esté cerrado.
+    \item Probabilidad de ocurrencia (O*): 4. La aparición de períodos de sobrecarga laboral no se elimina, pero una jornada planificada por debajo del máximo disponible reduce la probabilidad de que esa sobrecarga se traduzca en un atraso efectivo.
 \end{itemize}
 \else\input{plantilla/13-gestion-riesgos}\fi
 
