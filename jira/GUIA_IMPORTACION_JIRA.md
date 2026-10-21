@@ -3,7 +3,7 @@
 > Nota de terminología: desde fines de 2025 Atlassian renombró "Projects" a
 > "Spaces" en toda la interfaz de Jira. Es un cambio de nombre únicamente —
 > la distinción Team-managed/Company-managed, el importador CSV, los
-> sprints y la jerarquía Epic → Story → Sub-task funcionan exactamente
+> sprints y la jerarquía Epic → Story → Subtask funcionan exactamente
 > igual que antes, solo que el contenedor se llama "Space" en vez de
 > "Project". Esta guía ya usa esa terminología.
 
@@ -56,10 +56,10 @@ Revisá el preview (Jira te muestra una tabla antes de confirmar) y lanzá la im
 
 Algunas instancias con el importador CSV restringido (o configuraciones de administrador distintas) no resuelven bien esta jerarquía en una sola pasada. Si después de importar ves las Stories o Sub-tareas sueltas, sin padre:
 
-1. Filtrá el CSV para quedarte solo con las filas `Epic` + `Story` (quitá las de `Issue Type = Sub-task/Task`) e importá primero esa versión reducida.
+1. Filtrá el CSV para quedarte solo con las filas `Epic` + `Story` (quitá las de `Issue Type = Subtask/Task`) e importá primero esa versión reducida.
 2. Anotá las claves reales que Jira asignó a cada HU (p. ej. `NLOS-6` para HU1, `NLOS-7` para HU2, etc.).
 3. En el CSV completo, hacé buscar-y-reemplazar de cada `HU1`, `HU2`... (columna `Parent Id`) por la clave real (`NLOS-6`, `NLOS-7`...), y de `E1`...`E5` por las claves reales de las épicas.
-4. Importá de nuevo, ahora solo las filas `Sub-task`/`Task`.
+4. Importá de nuevo, ahora solo las filas `Subtask`/`Task`.
 
 ## 3. Crear los 12 sprints y fecharlos
 

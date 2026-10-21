@@ -335,7 +335,7 @@ for i, (parent, sprint, summary, hours, prio_override) in enumerate(tasks, start
     task_id = f"T{i}"
     if parent:
         story = story_by_id[parent]
-        issue_type = "Sub-task"
+        issue_type = "Subtask"
         priority = PRIORITY_MAP[story["prio"]]
         parent_id = parent
         labels = ""
