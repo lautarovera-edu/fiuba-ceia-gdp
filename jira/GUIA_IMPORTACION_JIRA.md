@@ -10,7 +10,7 @@
 Archivos en esta carpeta (`jira/` del repo):
 
 - `build_import.py` — script que genera los dos CSV de abajo (fuente de verdad; si corregís algo, editá este script y volvé a correrlo).
-- `jira_import.csv` — 101 filas: 5 épicas, 10 historias de usuario, 86 tareas (sub-tareas + tareas de gestión). **Todo el contenido de los tickets (Summary, Description, Epic Name) está en inglés**, como corresponde a los tickets del proyecto. Las claves internas (`HU1`, `E1`, nombres de Sprint, `Priority: High/Medium/Low`) y las fechas usan convenciones en inglés también.
+- `jira_import.csv` — 101 filas: 5 épicas, 10 historias de usuario, 86 tareas (sub-tareas + tareas de gestión). La referencia de "cuándo" es el sprint de cada ítem; solo las épicas y las tareas sin sprint traen **Start date** y **Due date** (no se usa time tracking). **Todo el contenido de los tickets (Summary, Description) está en inglés**, como corresponde a los tickets del proyecto. Las claves internas (`HU1`, `E1`, nombres de Sprint, `Priority: High/Medium/Low`) y las fechas usan convenciones en inglés también.
 - `sprint_dates.csv` — fechas de inicio/fin aproximadas de los 12 sprints + receso ("Break") + contingencia ("Contingency").
 
 ## 0. Por qué no lo hago yo directamente
@@ -26,7 +26,17 @@ Si más adelante querés que yo cree o actualice issues directamente vía API (u
 
 1. En Jira, `Create space` → plantilla **Scrum** → tipo **Team-managed** (ícono de personas, no "Company-managed"; esta distinción no cambió con el rename a Spaces).
 2. Nombre sugerido: `NLoS Detection (UWB)`. Clave sugerida: `NLOS`.
-3. En `Space settings → Features`, confirmá que estén activos: **Sprints**, **Epics** y **Story points**. Si vas a usar la columna `Original Estimate`, activá también **Time tracking**.
+3. En `Space settings → Features`, confirmá que estén activos: **Sprints** y **Estimation** (Story points). Time tracking no hace falta.
+4. En `Space settings → Work types`, revisá que cada tipo tenga en *Context fields* los campos que usa el CSV. Si falta alguno, arrastralo desde el panel derecho y tocá **Save changes**:
+
+   | Work type | Campos necesarios (además de Summary y Description) |
+   |---|---|
+   | Epic | Start date, Due date |
+   | Story | Parent, Priority, Story point estimate, Sprint |
+   | Subtask | Parent, Priority |
+   | Task | Parent, Priority, Sprint, Labels, Start date, Due date |
+
+   Las Subtasks no llevan Sprint: Jira siempre las mantiene en el sprint de su Story. Por eso el sprint va cargado en la Story. HU6 abarca los sprints 6 y 7: se importa en el Sprint 6, y al cerrarlo Jira ofrece pasar lo pendiente al Sprint 7.
 
 ## 2. Importar el CSV
 
@@ -41,12 +51,14 @@ En la pantalla de mapeo de columnas:
 | `Issue Type` | Issue Type |
 | `Summary` | Summary |
 | `Description` | Description |
-| `Epic Name` | Epic Name |
 | `Priority` | Priority |
 | `Story Points` | Story point estimate |
 | `Sprint` | Sprint |
-| `Original Estimate` | Original Estimate |
+| `Start date` | Start date |
+| `Due date` | Due date |
 | `Labels` | Labels |
+
+Las fechas están en formato `2026-11-23`. En la configuración del importador, poné el formato de fecha en `yyyy-MM-dd`; si no, Jira puede rechazar o malinterpretar las fechas.
 
 El par **Issue id / Parent id** es la clave: le dice a Jira "esta fila es hija de aquella otra fila del mismo archivo", y Jira infiere automáticamente si esa relación es *Epic Link* (cuando el padre es una Epic) o *parent de sub-tarea* (cuando el padre es una Story). No son campos reales de Jira — existen solo para resolver la jerarquía durante la importación, así que no vas a verlos después en los issues creados.
 
@@ -87,7 +99,21 @@ El importador de Jira crea los sprints por nombre (`Sprint 0`...`Sprint 11`) per
 
 Son fechas calculadas a partir de las duraciones del cuadro 5 del documento (inicio 25/ago/2026, fin con la defensa el 15/nov/2027 — coincide exacto con la fecha de defensa del acta, lo que confirma que el cálculo es consistente). Ajustalas si tu Gantt real difiere en algún punto.
 
-Las 2 tareas con label `cross-cutting` (reuniones de seguimiento, informe de avance) quedan **sin sprint asignado** a propósito, porque el documento las describe como actividades que atraviesan todo el proyecto, no ligadas a un sprint puntual. Podés dejarlas en el Backlog y moverlas manualmente al sprint donde correspondan, o crear para ellas un sprint "Cross-cutting" ficticio si preferís verlas en el tablero.
+### Cómo se maneja el "cuándo"
+
+El sprint es la referencia de cuándo se hace cada cosa, no una fecha fija por ítem:
+
+- **Stories, Subtasks y Tasks de los sprints 0 y 11**: sin Start date ni Due date. Si algo se atrasa, al cerrar el sprint Jira ofrece mover lo pendiente al siguiente, sin fechas que corregir a mano. Cada Subtask guarda en la descripción el sprint en que estaba planificada (`Planned effort: 8 h (Sprint 7)`).
+- **Epics**: con Start date y Due date (desde el inicio de su primer sprint hasta el fin del último), para que el Timeline muestre las 5 barras del plan. Si el cronograma se corre, se ajustan arrastrando la barra en el Timeline.
+- **Tasks sin sprint** (label `cross-cutting`): las reuniones de seguimiento abarcan todo el proyecto, y el informe de avance vence el 2027-07-12, antes del inicio del TTFA. Son las únicas tareas con fechas, porque no tienen sprint que les dé un vencimiento.
+
+### Labels
+
+- `optional`: en HU10, la única historia opcional del backlog (sección 6 del documento).
+- `ttfa` / `ttfb`: en las 8 tareas de redacción de la memoria y defensa del Sprint 11, para poder filtrarlas por separado aunque compartan sprint.
+- `cross-cutting`: en las 2 tareas sin sprint (reuniones de seguimiento, informe de avance).
+
+La línea base original, para comparar lo planificado con lo real, queda en el documento del plan y en `sprint_dates.csv`.
 
 ## 4. Checklist de verificación
 
@@ -95,7 +121,9 @@ Después de importar, confirmá:
 
 - [ ] 5 épicas: E1 a E4 (el backlog real) + E5 (gestión/cierre, no es backlog).
 - [ ] 10 historias de usuario, Story Points sumando **89** en total (HU1=5, HU2=5, HU3=8, HU4=8, HU5=8, HU6=13, HU7=13, HU8=13, HU9=8, HU10=8).
-- [ ] 86 tareas (sub-tareas bajo las HU + tareas sueltas bajo E5), con horas sumando **600 h** en total.
+- [ ] 86 tareas (sub-tareas bajo las HU + tareas sueltas bajo E5), cada una con su esfuerzo planificado en la descripción (`Planned effort: 8 h`), que en total suman **600 h**.
+- [ ] Las 5 épicas con Start date y Due date; la vista Timeline va de 2026-08-25 a 2027-11-15.
+- [ ] Cada Story en su sprint (HU6 en el Sprint 6), con sus Subtasks adentro.
 - [ ] HU10 marcada como prioridad Low/opcional, bajo la épica E4.
 - [ ] Cada HU tiene al menos 3 criterios de aceptación en su descripción (ya vienen cargados desde la sección 7 del documento, traducidos al inglés).
 - [ ] 12 sprints visibles en el Backlog con las fechas de la tabla anterior.

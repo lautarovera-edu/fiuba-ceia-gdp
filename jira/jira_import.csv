@@ -1,51 +1,51 @@
-Issue Id,Parent Id,Issue Type,Summary,Description,Epic Name,Priority,Story Points,Sprint,Original Estimate,Labels
-E1,,Epic,Data ingestion and understanding,,Data ingestion and understanding,,,,,
-E2,,Epic,CIR preprocessing and representation,,CIR preprocessing and representation,,,,,
-E3,,Epic,Modeling and optimization for the embedded system,,Modeling and optimization for the embedded system,,,,,
-E4,,Epic,Deployment and validation on the embedded system,,Deployment and validation on the embedded system,,,,,
-E5,,Epic,Project management and closeout (not part of the backlog),,Project management and closeout (not part of the backlog),,,,,
+Issue Id,Parent Id,Issue Type,Summary,Description,Priority,Story Points,Sprint,Start date,Due date,Labels
+E1,,Epic,Data ingestion and understanding,,,,,2026-11-03,2026-12-14,
+E2,,Epic,CIR preprocessing and representation,,,,,2027-01-12,2027-02-22,
+E3,,Epic,Modeling and optimization for the embedded system,,,,,2027-02-23,2027-05-17,
+E4,,Epic,Deployment and validation on the embedded system,,,,,2027-05-18,2027-06-28,
+E5,,Epic,Project management and closeout (not part of the backlog),,,,,2026-08-25,2027-11-15,
 HU1,E1,Story,Reproducible ingestion pipeline for the eWINE dataset,"As a model developer, I want a reproducible pipeline that converts the eWINE dataset into labeled CIR tensors, so that I can train models without repeating the preparation work for every experiment.
 
 Acceptance criteria:
 - The pipeline processes all records and finishes in under 5 minutes on the development machine.
 - Two runs with the same seed produce identical training/validation/test splits, verified by an index checksum.
 - The test set preserves the LoS/NLoS class ratio of the original dataset within 1 percentage point.
-- The pipeline aborts with an explicit message if any of the seven source subsets is missing or has an unexpected number of columns.",,High,5,,,
+- The pipeline aborts with an explicit message if any of the seven source subsets is missing or has an unexpected number of columns.",High,5,Sprint 1,,,
 HU2,E1,Story,Exploratory analysis of the CIR by class and by environment,"As a model developer, I want an exploratory analysis of the CIR broken down by class and by environment, so that I can identify distribution biases and define a partition scheme that measures generalization.
 
 Acceptance criteria:
 - The report shows, for each of the seven environments, the sample count per class and descriptive statistics of the channel metrics.
 - The report includes the average CIR and the 10th/90th percentile bands for each class and environment.
 - The report quantifies the imbalance between environments and explicitly states the detected biases and their expected effect on generalization.
-- The report is regenerated automatically from the data pipeline, with no manual steps.",,Medium,5,,,
+- The report is regenerated automatically from the data pipeline, with no manual steps.",Medium,5,Sprint 2,,,
 HU3,E2,Story,CIR alignment and normalization,"As a model developer, I want to align each CIR to its detected first path and normalize its amplitude, so that the model learns the shape of the multipath profile rather than the absolute position of the capture window.
 
 Acceptance criteria:
 - The alignment module places the first path at the same window position for 100% of the processed samples.
 - Each normalized CIR has unit energy, verified with a relative tolerance of 10^-6.
 - The accuracy comparison between at least two normalization schemes is documented on a reference classifier, using the same split and seed.
-- The preprocessing is expressed as a chainable transform, applied identically during training and inference.",,High,8,,,
+- The preprocessing is expressed as a chainable transform, applied identically during training and inference.",High,8,Sprint 3,,,
 HU4,E2,Story,CIR window width selection,"As a model developer, I want to reduce the CIR window to the smallest number of samples that preserves accuracy, so that I can bound the working memory the model requires on the device.
 
 Acceptance criteria:
 - A sweep of window widths is run with at least four values between 32 and 256 samples.
 - For each width, validation accuracy and required working memory (in bytes) are recorded.
 - The selected width does not reduce validation accuracy by more than 1 percentage point relative to the best value in the sweep.
-- The decision is documented together with the accuracy-vs-memory trade-off curve.",,Medium,8,,,
+- The decision is documented together with the accuracy-vs-memory trade-off curve.",Medium,8,Sprint 4,,,
 HU5,E3,Story,Baseline 1D CNN for LoS/NLoS classification,"As a model developer, I want to train a one-dimensional convolutional network on the preprocessed CIR, so that I get a baseline LoS/NLoS classification to compare later variants against.
 
 Acceptance criteria:
 - The network reaches an F1 score of 0.88 or higher on the test set with stratified split.
 - Accuracy, precision, recall, F1, ROC-AUC and the confusion matrix are reported.
 - The network outperforms, in F1, the two comparison models trained on the channel metrics.
-- Results are reproducible from the experiment log, which retains configuration, seed and weights for each run.",,High,8,,,
+- Results are reproducible from the experiment log, which retains configuration, seed and weights for each run.",High,8,Sprint 5,,,
 HU6,E3,Story,"Architecture search under a memory budget, with pruning","As a model developer, I want to explore architecture variants subject to an explicit memory budget, so that I can choose the best accuracy-vs-size trade-off for the model.
 
 Acceptance criteria:
 - The search evaluates at least twelve configurations with different depth, filter counts and kernel size.
 - Every evaluated configuration respects the fixed memory budget; configurations that exceed it are discarded automatically before training.
 - The accuracy-vs-model-size trade-off frontier is built, and the chosen architecture is justified against it.
-- The pruned model retains an F1 that does not drop more than 1 percentage point relative to the equivalent dense model.",,High,13,,,
+- The pruned model retains an F1 that does not drop more than 1 percentage point relative to the equivalent dense model.",High,13,Sprint 6,,,
 HU7,E3,Story,INT8 quantization and CMSIS-NN acceleration,"As a firmware developer, I want to quantize the selected model to 8-bit integers, so that I reduce its program-memory footprint and enable accelerated execution with CMSIS-NN.
 
 Acceptance criteria:
@@ -53,110 +53,110 @@ Acceptance criteria:
 - The F1 drop of the quantized model relative to the floating-point model does not exceed 2 percentage points.
 - All operators in the quantized graph belong to the set implemented by LiteRT for Microcontrollers (verified with the graph-inspection tool).
 - The most compute-intensive operations are resolved with optimized CMSIS-NN kernels (verified with the interpreter's operator profiler).
-- The quantization procedure is documented, including the composition of the representative calibration set.",,High,13,,,
+- The quantization procedure is documented, including the composition of the representative calibration set.",High,13,Sprint 8,,,
 HU8,E4,Story,Running the quantized model on the Cortex-M33 SoC,"As a firmware developer, I want to run the quantized model on the ARM Cortex-M33-based SoC, so that I can verify the inference fits in available memory and responds within the required time.
 
 Acceptance criteria:
 - The firmware compiles without warnings and is flashed to the evaluation board following the documented procedure.
 - The interpreter's working memory is explicitly sized, and the firmware reports the actually used value over the console.
 - The test harness injects at least 100 stored CIR samples and returns the inferred class for each one over the serial port.
-- The firmware runs 1000 consecutive inferences with no resets or stack overflows.",,High,13,,,
+- The firmware runs 1000 consecutive inferences with no resets or stack overflows.",High,13,Sprint 9,,,
 HU9,E4,Story,"Memory, latency and PC-vs-device parity measurement","As a firmware developer, I want to measure and compare memory usage, latency and accuracy between the personal computer and the device, so that I can demonstrate that the degradation introduced by quantization stays bounded.
 
 Acceptance criteria:
 - Program memory and working memory usage are reported, obtained from the linker's memory map.
 - Inference latency is reported as median and 95th percentile over at least 1000 repetitions, measured with the processor's cycle counter; the median is 10 ms or lower.
-- The class inferred on the device matches the class inferred on the personal computer for at least 99% of the test-set samples, with discrepancies analyzed.",,High,8,,,
+- The class inferred on the device matches the class inferred on the personal computer for at least 99% of the test-set samples, with discrepancies analyzed.",High,8,Sprint 10,,,
 HU10,E4,Story,Comparison against the deterministic reference criterion (optional),"As the product technical lead, I want to compare the deep-learning-based detector against the deterministic reference criterion, so that I can quantify the improvement the proposed solution provides. Optional story.
 
 Acceptance criteria:
 - The deterministic reference indicator is obtained for the entire test set.
 - Confusion matrices and ROC curves for both criteria are presented on the same test set.
 - The comparison is accompanied by a 95% confidence interval for the F1 difference between both criteria.
-- The conclusions explicitly identify the cases where the deterministic criterion is preferable.",,Low,8,,,
-T1,E5,Task,Review the proposal and agree on scope with the client,,,Medium,,Sprint 0,6h,
-T2,E5,Task,Draft the project plan using the course template,,,Medium,,Sprint 0,16h,
-T3,E5,Task,Study the dataset documentation and the embedded interpreter,,,Medium,,Sprint 0,8h,
-T4,HU1,Subtask,Download and version the eWINE dataset and verify its integrity,,,High,,Sprint 1,4h,
-T5,HU1,Subtask,Implement the reader that builds the CIR array and the label vector,,,High,,Sprint 1,8h,
-T6,HU1,Subtask,Implement the reproducible stratified split by seed,,,High,,Sprint 1,6h,
-T7,HU1,Subtask,Build the reproducible environment with a container and version control,,,High,,Sprint 1,8h,
-T8,HU1,Subtask,Write unit tests for the reader and the split,,,High,,Sprint 1,8h,
-T9,HU1,Subtask,Debug format inconsistencies across the seven subsets,,,High,,Sprint 1,8h,
-T10,HU1,Subtask,Document the data pipeline and log the sprint results,,,High,,Sprint 1,6h,
-T11,HU2,Subtask,Compute descriptive statistics of the channel metrics by class and by environment,,,Medium,,Sprint 2,5h,
-T12,HU2,Subtask,Plot the average CIR and its percentile bands by class and environment,,,Medium,,Sprint 2,6h,
-T13,HU2,Subtask,Quantify the imbalance between environments,,,Medium,,Sprint 2,4h,
-T14,HU2,Subtask,Implement the reusable exploratory analysis notebook,,,Medium,,Sprint 2,8h,
-T15,HU2,Subtask,Analyze the separability of the channel metrics by class,,,Medium,,Sprint 2,8h,
-T16,HU2,Subtask,Define and validate the leave-one-environment-out scheme,,,Medium,,Sprint 2,8h,
-T17,HU2,Subtask,Verify the analysis reproducibility with different seeds,,,Medium,,Sprint 2,4h,
-T18,HU2,Subtask,Document the findings and the biases of the dataset,,,Medium,,Sprint 2,5h,
-T19,HU3,Subtask,Implement first-path index detection and CIR alignment,,,High,,Sprint 3,8h,
-T20,HU3,Subtask,Implement the energy-based and max-amplitude normalization variants,,,High,,Sprint 3,5h,
-T21,HU3,Subtask,Compare the effect of each normalization on a reference classifier,,,High,,Sprint 3,6h,
-T22,HU3,Subtask,Implement augmentation via Gaussian noise and window shifting,,,High,,Sprint 3,8h,
-T23,HU3,Subtask,Evaluate the impact of augmentation on the validation set,,,High,,Sprint 3,8h,
-T24,HU3,Subtask,Refactor the preprocessing as a chainable transform,,,High,,Sprint 3,8h,
-T25,HU3,Subtask,Document the adopted preprocessing decisions,,,High,,Sprint 3,5h,
-T26,HU4,Subtask,Parameterize the CIR window width around the first path,,,Medium,,Sprint 4,4h,
-T27,HU4,Subtask,Run the window-width sweep between 32 and 256 samples,,,Medium,,Sprint 4,8h,
-T28,HU4,Subtask,Select the window width and document the trade-off,,,Medium,,Sprint 4,3h,
-T29,HU4,Subtask,Instrument memory usage computation per configuration,,,Medium,,Sprint 4,8h,
-T30,HU4,Subtask,Run the combined window-and-subsampling sweep,,,Medium,,Sprint 4,8h,
-T31,HU4,Subtask,Analyze accuracy sensitivity to first-path detection error,,,Medium,,Sprint 4,8h,
-T32,HU4,Subtask,Consolidate and version the final preprocessed dataset,,,Medium,,Sprint 4,9h,
-T33,HU5,Subtask,Implement the baseline one-dimensional convolutional network,,,High,,Sprint 5,8h,
-T34,HU5,Subtask,Configure the training loop with early stopping and experiment logging,,,High,,Sprint 5,6h,
-T35,HU5,Subtask,Train the comparison models (logistic regression and SVM) on the channel metrics,,,High,,Sprint 5,6h,
-T36,HU5,Subtask,Train and compare the network against the comparison models,,,High,,Sprint 5,8h,
-T37,HU5,Subtask,Evaluate the network with the leave-one-environment-out scheme,,,High,,Sprint 5,8h,
-T38,HU5,Subtask,Analyze errors by environment and by signal-to-noise ratio,,,High,,Sprint 5,8h,
-T39,HU5,Subtask,Document the baseline and its metrics,,,High,,Sprint 5,4h,
-T40,HU6,Subtask,Define the per-layer memory budget and the cost function guiding the search,,,High,,Sprint 6,5h,
-T41,HU6,Subtask,"Run the hyperparameter search over filter count, depth and kernel size",,,High,,Sprint 6,8h,
-T42,HU6,Subtask,Implement automatic logging of experiments and their artifacts,,,High,,Sprint 6,8h,
-T43,HU6,Subtask,Run the first search round over depth and filters,,,High,,Sprint 6,8h,
-T44,HU6,Subtask,Run the second search round over kernel size and regularization,,,High,,Sprint 6,8h,
-T45,HU6,Subtask,Build the accuracy-vs-memory trade-off frontier,,,High,,Sprint 6,8h,
-T46,HU6,Subtask,Document the search results,,,High,,Sprint 6,3h,
-T47,HU6,Subtask,Apply structured filter pruning to the selected model,,,High,,Sprint 7,8h,
-T48,HU6,Subtask,Retrain the pruned model and verify accuracy recovery,,,High,,Sprint 7,8h,
-T49,HU6,Subtask,Compare the pruned model against the dense model in memory and accuracy,,,High,,Sprint 7,8h,
-T50,HU6,Subtask,Select the final architecture and freeze its weights,,,High,,Sprint 7,6h,
-T51,HU6,Subtask,Refactor the training code for the quantization stage,,,High,,Sprint 7,8h,
-T52,HU6,Subtask,Verify the traceability of the logged experiments,,,High,,Sprint 7,4h,
-T53,HU6,Subtask,Prepare the technical material for the interim review,,,High,,Sprint 7,6h,
-T54,HU7,Subtask,Apply post-training quantization to 8-bit integers,,,High,,Sprint 8,6h,
-T55,HU7,Subtask,Verify the graph operators in LiteRT and their CMSIS-NN coverage,,,High,,Sprint 8,5h,
-T56,HU7,Subtask,Apply quantization-aware training (if the F1 drop requires it),,,High,,Sprint 8,8h,
-T57,HU7,Subtask,Build the representative set for scale calibration,,,High,,Sprint 8,5h,
-T58,HU7,Subtask,Compare floating-point vs. quantized model accuracy by environment,,,High,,Sprint 8,8h,
-T59,HU7,Subtask,Analyze the activation distribution and adjust quantization ranges,,,High,,Sprint 8,8h,
-T60,HU7,Subtask,Verify numerical equivalence against the reference interpreter,,,High,,Sprint 8,4h,
-T61,HU7,Subtask,Document the quantization procedure,,,High,,Sprint 8,4h,
-T62,HU8,Subtask,Set up the firmware project with LiteRT for Microcontrollers and CMSIS-NN,,,High,,Sprint 9,8h,
-T63,HU8,Subtask,Convert the quantized model into a C array and integrate it into the firmware image,,,High,,Sprint 9,4h,
-T64,HU8,Subtask,Implement the test harness that injects CIR samples and replies over the serial port,,,High,,Sprint 9,8h,
-T65,HU8,Subtask,Configure the build/debug toolchain and archive the pinned SDK version,,,High,,Sprint 9,8h,
-T66,HU8,Subtask,Resolve interpreter working-memory allocation errors,,,High,,Sprint 9,8h,
-T67,HU8,Subtask,Implement loading of test vectors from non-volatile memory,,,High,,Sprint 9,8h,
-T68,HU8,Subtask,Write the internal guide for integrating the model into the firmware,,,High,,Sprint 9,4h,
-T69,HU9,Subtask,Measure program memory and working memory usage (linker memory map),,,High,,Sprint 10,4h,
-T70,HU9,Subtask,Measure inference latency with the cycle counter over 1000 repetitions,,,High,,Sprint 10,5h,
-T71,HU9,Subtask,Compare model outputs on the PC and on the device,,,High,,Sprint 10,6h,
-T72,HU9,Subtask,Automate the measurement campaign over the full test set,,,High,,Sprint 10,8h,
-T73,HU9,Subtask,Analyze discrepancies between both execution platforms,,,High,,Sprint 10,8h,
-T74,HU10,Subtask,Extract the deterministic NLoS reference indicator for the test set,,,Low,,Sprint 10,6h,
-T75,HU10,Subtask,Build the confusion-matrix and ROC-curve comparison (deterministic vs. model),,,Low,,Sprint 10,6h,
-T76,HU9,Subtask,Write the model's technical datasheet with the prototype results,,,High,,Sprint 10,5h,
-T77,E5,Task,TTFA - Write chapter 1 of the thesis (general introduction),,,Medium,,Sprint 11,8h,
-T78,E5,Task,TTFA - Write chapter 2 of the thesis (specific introduction),,,Medium,,Sprint 11,10h,
-T79,E5,Task,TTFA - Write chapter 3 of the thesis (design and implementation),,,Medium,,Sprint 11,14h,
-T80,E5,Task,TTFB - Write chapter 4 of the thesis (experiments and results),,,Medium,,Sprint 11,12h,
-T81,E5,Task,TTFB - Write chapter 5 of the thesis (conclusions),,,Medium,,Sprint 11,5h,
-T82,E5,Task,"TTFB - Review, edit and typeset the final version of the thesis",,,Medium,,Sprint 11,6h,
-T83,E5,Task,TTFB - Prepare the defense presentation,,,Medium,,Sprint 11,9h,
-T84,E5,Task,TTFB - Rehearse the defense and adjust the timing,,,Medium,,Sprint 11,6h,
-T85,E5,Task,Hold six review meetings with the client and the advisor,,,Medium,,,12h,cross-cutting
-T86,E5,Task,Write the progress report,,,Medium,,,8h,cross-cutting
+- The conclusions explicitly identify the cases where the deterministic criterion is preferable.",Low,8,Sprint 10,,,optional
+T1,E5,Task,Review the proposal and agree on scope with the client,Planned effort: 6 h,Medium,,Sprint 0,,,
+T2,E5,Task,Draft the project plan using the course template,Planned effort: 16 h,Medium,,Sprint 0,,,
+T3,E5,Task,Study the dataset documentation and the embedded interpreter,Planned effort: 8 h,Medium,,Sprint 0,,,
+T4,HU1,Subtask,Download and version the eWINE dataset and verify its integrity,Planned effort: 4 h (Sprint 1),High,,,,,
+T5,HU1,Subtask,Implement the reader that builds the CIR array and the label vector,Planned effort: 8 h (Sprint 1),High,,,,,
+T6,HU1,Subtask,Implement the reproducible stratified split by seed,Planned effort: 6 h (Sprint 1),High,,,,,
+T7,HU1,Subtask,Build the reproducible environment with a container and version control,Planned effort: 8 h (Sprint 1),High,,,,,
+T8,HU1,Subtask,Write unit tests for the reader and the split,Planned effort: 8 h (Sprint 1),High,,,,,
+T9,HU1,Subtask,Debug format inconsistencies across the seven subsets,Planned effort: 8 h (Sprint 1),High,,,,,
+T10,HU1,Subtask,Document the data pipeline and log the sprint results,Planned effort: 6 h (Sprint 1),High,,,,,
+T11,HU2,Subtask,Compute descriptive statistics of the channel metrics by class and by environment,Planned effort: 5 h (Sprint 2),Medium,,,,,
+T12,HU2,Subtask,Plot the average CIR and its percentile bands by class and environment,Planned effort: 6 h (Sprint 2),Medium,,,,,
+T13,HU2,Subtask,Quantify the imbalance between environments,Planned effort: 4 h (Sprint 2),Medium,,,,,
+T14,HU2,Subtask,Implement the reusable exploratory analysis notebook,Planned effort: 8 h (Sprint 2),Medium,,,,,
+T15,HU2,Subtask,Analyze the separability of the channel metrics by class,Planned effort: 8 h (Sprint 2),Medium,,,,,
+T16,HU2,Subtask,Define and validate the leave-one-environment-out scheme,Planned effort: 8 h (Sprint 2),Medium,,,,,
+T17,HU2,Subtask,Verify the analysis reproducibility with different seeds,Planned effort: 4 h (Sprint 2),Medium,,,,,
+T18,HU2,Subtask,Document the findings and the biases of the dataset,Planned effort: 5 h (Sprint 2),Medium,,,,,
+T19,HU3,Subtask,Implement first-path index detection and CIR alignment,Planned effort: 8 h (Sprint 3),High,,,,,
+T20,HU3,Subtask,Implement the energy-based and max-amplitude normalization variants,Planned effort: 5 h (Sprint 3),High,,,,,
+T21,HU3,Subtask,Compare the effect of each normalization on a reference classifier,Planned effort: 6 h (Sprint 3),High,,,,,
+T22,HU3,Subtask,Implement augmentation via Gaussian noise and window shifting,Planned effort: 8 h (Sprint 3),High,,,,,
+T23,HU3,Subtask,Evaluate the impact of augmentation on the validation set,Planned effort: 8 h (Sprint 3),High,,,,,
+T24,HU3,Subtask,Refactor the preprocessing as a chainable transform,Planned effort: 8 h (Sprint 3),High,,,,,
+T25,HU3,Subtask,Document the adopted preprocessing decisions,Planned effort: 5 h (Sprint 3),High,,,,,
+T26,HU4,Subtask,Parameterize the CIR window width around the first path,Planned effort: 4 h (Sprint 4),Medium,,,,,
+T27,HU4,Subtask,Run the window-width sweep between 32 and 256 samples,Planned effort: 8 h (Sprint 4),Medium,,,,,
+T28,HU4,Subtask,Select the window width and document the trade-off,Planned effort: 3 h (Sprint 4),Medium,,,,,
+T29,HU4,Subtask,Instrument memory usage computation per configuration,Planned effort: 8 h (Sprint 4),Medium,,,,,
+T30,HU4,Subtask,Run the combined window-and-subsampling sweep,Planned effort: 8 h (Sprint 4),Medium,,,,,
+T31,HU4,Subtask,Analyze accuracy sensitivity to first-path detection error,Planned effort: 8 h (Sprint 4),Medium,,,,,
+T32,HU4,Subtask,Consolidate and version the final preprocessed dataset,Planned effort: 9 h (Sprint 4),Medium,,,,,
+T33,HU5,Subtask,Implement the baseline one-dimensional convolutional network,Planned effort: 8 h (Sprint 5),High,,,,,
+T34,HU5,Subtask,Configure the training loop with early stopping and experiment logging,Planned effort: 6 h (Sprint 5),High,,,,,
+T35,HU5,Subtask,Train the comparison models (logistic regression and SVM) on the channel metrics,Planned effort: 6 h (Sprint 5),High,,,,,
+T36,HU5,Subtask,Train and compare the network against the comparison models,Planned effort: 8 h (Sprint 5),High,,,,,
+T37,HU5,Subtask,Evaluate the network with the leave-one-environment-out scheme,Planned effort: 8 h (Sprint 5),High,,,,,
+T38,HU5,Subtask,Analyze errors by environment and by signal-to-noise ratio,Planned effort: 8 h (Sprint 5),High,,,,,
+T39,HU5,Subtask,Document the baseline and its metrics,Planned effort: 4 h (Sprint 5),High,,,,,
+T40,HU6,Subtask,Define the per-layer memory budget and the cost function guiding the search,Planned effort: 5 h (Sprint 6),High,,,,,
+T41,HU6,Subtask,"Run the hyperparameter search over filter count, depth and kernel size",Planned effort: 8 h (Sprint 6),High,,,,,
+T42,HU6,Subtask,Implement automatic logging of experiments and their artifacts,Planned effort: 8 h (Sprint 6),High,,,,,
+T43,HU6,Subtask,Run the first search round over depth and filters,Planned effort: 8 h (Sprint 6),High,,,,,
+T44,HU6,Subtask,Run the second search round over kernel size and regularization,Planned effort: 8 h (Sprint 6),High,,,,,
+T45,HU6,Subtask,Build the accuracy-vs-memory trade-off frontier,Planned effort: 8 h (Sprint 6),High,,,,,
+T46,HU6,Subtask,Document the search results,Planned effort: 3 h (Sprint 6),High,,,,,
+T47,HU6,Subtask,Apply structured filter pruning to the selected model,Planned effort: 8 h (Sprint 7),High,,,,,
+T48,HU6,Subtask,Retrain the pruned model and verify accuracy recovery,Planned effort: 8 h (Sprint 7),High,,,,,
+T49,HU6,Subtask,Compare the pruned model against the dense model in memory and accuracy,Planned effort: 8 h (Sprint 7),High,,,,,
+T50,HU6,Subtask,Select the final architecture and freeze its weights,Planned effort: 6 h (Sprint 7),High,,,,,
+T51,HU6,Subtask,Refactor the training code for the quantization stage,Planned effort: 8 h (Sprint 7),High,,,,,
+T52,HU6,Subtask,Verify the traceability of the logged experiments,Planned effort: 4 h (Sprint 7),High,,,,,
+T53,HU6,Subtask,Prepare the technical material for the interim review,Planned effort: 6 h (Sprint 7),High,,,,,
+T54,HU7,Subtask,Apply post-training quantization to 8-bit integers,Planned effort: 6 h (Sprint 8),High,,,,,
+T55,HU7,Subtask,Verify the graph operators in LiteRT and their CMSIS-NN coverage,Planned effort: 5 h (Sprint 8),High,,,,,
+T56,HU7,Subtask,Apply quantization-aware training (if the F1 drop requires it),Planned effort: 8 h (Sprint 8),High,,,,,
+T57,HU7,Subtask,Build the representative set for scale calibration,Planned effort: 5 h (Sprint 8),High,,,,,
+T58,HU7,Subtask,Compare floating-point vs. quantized model accuracy by environment,Planned effort: 8 h (Sprint 8),High,,,,,
+T59,HU7,Subtask,Analyze the activation distribution and adjust quantization ranges,Planned effort: 8 h (Sprint 8),High,,,,,
+T60,HU7,Subtask,Verify numerical equivalence against the reference interpreter,Planned effort: 4 h (Sprint 8),High,,,,,
+T61,HU7,Subtask,Document the quantization procedure,Planned effort: 4 h (Sprint 8),High,,,,,
+T62,HU8,Subtask,Set up the firmware project with LiteRT for Microcontrollers and CMSIS-NN,Planned effort: 8 h (Sprint 9),High,,,,,
+T63,HU8,Subtask,Convert the quantized model into a C array and integrate it into the firmware image,Planned effort: 4 h (Sprint 9),High,,,,,
+T64,HU8,Subtask,Implement the test harness that injects CIR samples and replies over the serial port,Planned effort: 8 h (Sprint 9),High,,,,,
+T65,HU8,Subtask,Configure the build/debug toolchain and archive the pinned SDK version,Planned effort: 8 h (Sprint 9),High,,,,,
+T66,HU8,Subtask,Resolve interpreter working-memory allocation errors,Planned effort: 8 h (Sprint 9),High,,,,,
+T67,HU8,Subtask,Implement loading of test vectors from non-volatile memory,Planned effort: 8 h (Sprint 9),High,,,,,
+T68,HU8,Subtask,Write the internal guide for integrating the model into the firmware,Planned effort: 4 h (Sprint 9),High,,,,,
+T69,HU9,Subtask,Measure program memory and working memory usage (linker memory map),Planned effort: 4 h (Sprint 10),High,,,,,
+T70,HU9,Subtask,Measure inference latency with the cycle counter over 1000 repetitions,Planned effort: 5 h (Sprint 10),High,,,,,
+T71,HU9,Subtask,Compare model outputs on the PC and on the device,Planned effort: 6 h (Sprint 10),High,,,,,
+T72,HU9,Subtask,Automate the measurement campaign over the full test set,Planned effort: 8 h (Sprint 10),High,,,,,
+T73,HU9,Subtask,Analyze discrepancies between both execution platforms,Planned effort: 8 h (Sprint 10),High,,,,,
+T74,HU10,Subtask,Extract the deterministic NLoS reference indicator for the test set,Planned effort: 6 h (Sprint 10),Low,,,,,
+T75,HU10,Subtask,Build the confusion-matrix and ROC-curve comparison (deterministic vs. model),Planned effort: 6 h (Sprint 10),Low,,,,,
+T76,HU9,Subtask,Write the model's technical datasheet with the prototype results,Planned effort: 5 h (Sprint 10),High,,,,,
+T77,E5,Task,TTFA - Write chapter 1 of the thesis (general introduction),Planned effort: 8 h,Medium,,Sprint 11,,,ttfa
+T78,E5,Task,TTFA - Write chapter 2 of the thesis (specific introduction),Planned effort: 10 h,Medium,,Sprint 11,,,ttfa
+T79,E5,Task,TTFA - Write chapter 3 of the thesis (design and implementation),Planned effort: 14 h,Medium,,Sprint 11,,,ttfa
+T80,E5,Task,TTFB - Write chapter 4 of the thesis (experiments and results),Planned effort: 12 h,Medium,,Sprint 11,,,ttfb
+T81,E5,Task,TTFB - Write chapter 5 of the thesis (conclusions),Planned effort: 5 h,Medium,,Sprint 11,,,ttfb
+T82,E5,Task,"TTFB - Review, edit and typeset the final version of the thesis",Planned effort: 6 h,Medium,,Sprint 11,,,ttfb
+T83,E5,Task,TTFB - Prepare the defense presentation,Planned effort: 9 h,Medium,,Sprint 11,,,ttfb
+T84,E5,Task,TTFB - Rehearse the defense and adjust the timing,Planned effort: 6 h,Medium,,Sprint 11,,,ttfb
+T85,E5,Task,Hold six review meetings with the client and the advisor,Planned effort: 12 h,Medium,,,2026-08-25,2027-11-15,cross-cutting
+T86,E5,Task,Write the progress report,Planned effort: 8 h,Medium,,,2026-08-25,2027-07-12,cross-cutting
