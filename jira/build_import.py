@@ -337,26 +337,55 @@ def span(date_pairs):
 
 
 # ---------------------------------------------------------------------------
-# 7. Write jira_import.csv
+# 7. Write a single jira_import.csv.
+#
+# Jira Cloud's admin-only "External System Import" resolves Epic -> Story ->
+# Subtask hierarchy in one pass via an "Issue ID"/"Parent" column pair (each
+# row gets a unique Issue ID; a child row's Parent references its parent
+# row's Issue ID). This is current, documented behavior:
+# https://support.atlassian.com/jira/kb/keep-issue-parent-child-mapping-during-csv-import-to-jira-cloud/
 # ---------------------------------------------------------------------------
 HEADER = [
-    "Issue Id", "Parent Id", "Issue Type", "Summary", "Description",
+    "Issue ID", "Parent", "Issue Type", "Summary", "Description",
     "Priority", "Story Points", "Sprint", "Start date", "Due date", "Labels",
 ]
 
-task_rows = []
+rows = []
 dates_by_parent = {}
 first_sprint_by_story = {}
+issue_id_by_key = {eid: i for i, (eid, _) in enumerate(epics, start=1)}
+next_id = len(epics) + 1
 
-# Subtasks (parent = HU) and Tasks (parent = E5).
-# Jira keeps subtasks in their parent's sprint, so the sprint goes on the Story
-# and the subtask only records its planned sprint in the description.
-for i, (parent, sprint, summary, hours, prio_override) in enumerate(tasks, start=1):
+# Epics first (no Parent: they are the root of the hierarchy). Their dates
+# are filled in afterwards, once every child's dates are known.
+epic_row_index = {}
+for eid, ename in epics:
+    epic_row_index[eid] = len(rows)
+    rows.append([issue_id_by_key[eid], "", "Epic", ename, "", "", "", "", "", "", ""])
+
+# Stories (Parent = their epic's Issue ID). Jira keeps subtasks in their
+# parent's sprint, so the sprint goes on the Story; it starts in its first
+# planned sprint (HU6 starts in Sprint 6 and carries over to Sprint 7 when
+# Sprint 6 is closed).
+story_row_index = {}
+for s in stories:
+    issue_id_by_key[s["id"]] = next_id
+    next_id += 1
+    desc = s["desc"] + "\n\nAcceptance criteria:\n" + "\n".join(f"- {a}" for a in s["ac"])
+    labels = "optional" if s["id"] == "HU10" else ""
+    story_row_index[s["id"]] = len(rows)
+    rows.append([
+        issue_id_by_key[s["id"]], issue_id_by_key[s["epic"]], "Story", s["summary"], desc,
+        PRIORITY_MAP[s["prio"]], s["sp"], "", "", "", labels,  # Sprint filled in below
+    ])
+
+# Subtasks (Parent = their Story's Issue ID) and Tasks (Parent = E5's Issue ID).
+for parent, sprint, summary, hours, prio_override in tasks:
     task_start, task_due = task_dates(sprint, summary)
     if parent:
         issue_type = "Subtask"
         priority = PRIORITY_MAP[story_by_id[parent]["prio"]]
-        parent_id = parent
+        parent_id = issue_id_by_key[parent]
         labels = ""
         row_sprint = ""
         desc = f"Planned effort: {hours} h ({sprint})"
@@ -364,7 +393,7 @@ for i, (parent, sprint, summary, hours, prio_override) in enumerate(tasks, start
     else:
         issue_type = "Task"
         priority = prio_override or "Medium"
-        parent_id = "E5"
+        parent_id = issue_id_by_key["E5"]
         if sprint is None:
             labels = "cross-cutting"
         elif summary.startswith("TTFA"):
@@ -377,35 +406,22 @@ for i, (parent, sprint, summary, hours, prio_override) in enumerate(tasks, start
         desc = f"Planned effort: {hours} h"
     dates_by_parent.setdefault(parent_id, []).append((task_start, task_due))
     row_start, row_due = iso_or_blank((task_start, task_due), keep=sprint is None)
-    task_rows.append([
-        f"T{i}", parent_id, issue_type, summary, desc,
+    rows.append([
+        next_id, parent_id, issue_type, summary, desc,
         priority, "", row_sprint, row_start, row_due, labels,
     ])
+    next_id += 1
 
-# Stories start in their first planned sprint (HU6 starts in Sprint 6 and
-# carries over to Sprint 7 when Sprint 6 is closed). Their dates only feed the
-# epic span.
-story_rows = []
+# Back-fill each Story's sprint and each Epic's Start/Due date span.
 for s in stories:
-    dates_by_parent.setdefault(s["epic"], []).append(span(dates_by_parent[s["id"]]))
-    desc = s["desc"] + "\n\nAcceptance criteria:\n" + "\n".join(f"- {a}" for a in s["ac"])
-    labels = "optional" if s["id"] == "HU10" else ""
-    story_rows.append([
-        s["id"], s["epic"], "Story", s["summary"], desc,
-        PRIORITY_MAP[s["prio"]], s["sp"], first_sprint_by_story[s["id"]], "", "", labels,
-    ])
-
-# Epics span the dates of their children (empty Parent Id: root of the hierarchy)
-epic_rows = []
-for eid, ename in epics:
-    epic_start, epic_due = span(dates_by_parent[eid])
-    epic_rows.append([
-        eid, "", "Epic", ename, "",
-        "", "", "", epic_start.isoformat(), epic_due.isoformat(), "",
-    ])
-
-# Parents first so the importer creates them before their children
-rows = epic_rows + story_rows + task_rows
+    rows[story_row_index[s["id"]]][7] = first_sprint_by_story[s["id"]]
+    dates_by_parent.setdefault(issue_id_by_key[s["epic"]], []).append(
+        span(dates_by_parent[issue_id_by_key[s["id"]]])
+    )
+for eid, _ in epics:
+    epic_start, epic_due = span(dates_by_parent[issue_id_by_key[eid]])
+    rows[epic_row_index[eid]][8] = epic_start.isoformat()
+    rows[epic_row_index[eid]][9] = epic_due.isoformat()
 
 with open(f"{OUT_DIR}/jira_import.csv", "w", newline="", encoding="utf-8") as f:
     w = csv.writer(f)

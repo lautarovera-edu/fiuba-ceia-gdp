@@ -9,8 +9,8 @@
 
 Archivos en esta carpeta (`jira/` del repo):
 
-- `build_import.py` — script que genera los dos CSV de abajo (fuente de verdad; si corregís algo, editá este script y volvé a correrlo).
-- `jira_import.csv` — 101 filas: 5 épicas, 10 historias de usuario, 86 tareas (sub-tareas + tareas de gestión). La referencia de "cuándo" es el sprint de cada ítem; solo las épicas y las tareas sin sprint traen **Start date** y **Due date** (no se usa time tracking). **Todo el contenido de los tickets (Summary, Description) está en inglés**, como corresponde a los tickets del proyecto. Las claves internas (`HU1`, `E1`, nombres de Sprint, `Priority: High/Medium/Low`) y las fechas usan convenciones en inglés también.
+- `build_import.py` — script que genera `jira_import.csv` (fuente de verdad; si corregís algo, editá este script y volvé a correrlo).
+- `jira_import.csv` — 101 filas: 5 épicas, 10 historias de usuario, 86 tareas (sub-tareas + tareas de gestión), con las columnas `Issue ID`/`Parent` que arman la jerarquía Epic → Story → Subtask en una sola importación. La referencia de "cuándo" es el sprint de cada ítem; solo las épicas y las tareas sin sprint traen **Start date** y **Due date** (no se usa time tracking). **Todo el contenido de los tickets (Summary, Description) está en inglés**, como corresponde a los tickets del proyecto.
 - `sprint_dates.csv` — fechas de inicio/fin aproximadas de los 12 sprints + receso ("Break") + contingencia ("Contingency").
 
 ## 0. Por qué no lo hago yo directamente
@@ -18,60 +18,67 @@ Archivos en esta carpeta (`jira/` del repo):
 Existe un conector MCP de Atlassian disponible, pero:
 
 1. Requiere autorización OAuth interactiva (`/mcp` en una sesión interactiva de Claude Code), que no está disponible aquí.
-2. Crear un **Space** nuevo en Jira normalmente exige permisos de administrador del sitio, que una cuenta corporativa individual suele no tener.
+2. El import de CSV con jerarquía completa (ver sección 2) requiere permisos de administrador del sitio Jira, que tu cuenta no tiene (lo confirmaste: "You do not have access to Jira settings or Atlassian admin").
 
-Si más adelante querés que yo cree o actualice issues directamente vía API (una vez que el Space ya exista), corré `/mcp` en una sesión interactiva de Claude Code y autorizá el conector de Atlassian; en la próxima conversación podré leer y escribir issues de Jira con ese conector.
+Si más adelante querés que yo cree o actualice issues directamente vía API, corré `/mcp` en una sesión interactiva de Claude Code y autorizá el conector de Atlassian; en la próxima conversación podré leer y escribir issues de Jira con ese conector (igual va a necesitar que alguien con los permisos correspondientes lo autorice contra la cuenta corporativa).
 
-## 1. Crear el Space
+## 1. El Space (ya creado)
 
-1. En Jira, `Create space` → plantilla **Scrum** → tipo **Team-managed** (ícono de personas, no "Company-managed"; esta distinción no cambió con el rename a Spaces).
-2. Nombre sugerido: `NLoS Detection (UWB)`. Clave sugerida: `NLOS`.
-3. En `Space settings → Features`, confirmá que estén activos: **Sprints** y **Estimation** (Story points). Time tracking no hace falta.
-4. En `Space settings → Work types`, revisá que cada tipo tenga en *Context fields* los campos que usa el CSV. Si falta alguno, arrastralo desde el panel derecho y tocá **Save changes**:
+El Space `NLoS Detection (UWB)` (clave `NLOS`), Scrum, team-managed, ya está creado. En `Space settings → Work types`, confirmá que cada tipo tenga en *Context fields* los campos que usa el CSV. Si falta alguno, arrastralo desde el panel derecho y tocá **Save changes**:
 
-   | Work type | Campos necesarios (además de Summary y Description) |
-   |---|---|
-   | Epic | Start date, Due date |
-   | Story | Parent, Priority, Story point estimate, Sprint |
-   | Subtask | Parent, Priority |
-   | Task | Parent, Priority, Sprint, Labels, Start date, Due date |
+| Work type | Campos necesarios (además de Summary y Description) |
+|---|---|
+| Epic | Start date, Due date |
+| Story | Parent, Priority, Story point estimate, Sprint |
+| Subtask | Parent, Priority |
+| Task | Parent, Priority, Sprint, Labels, Start date, Due date |
 
-   Las Subtasks no llevan Sprint: Jira siempre las mantiene en el sprint de su Story. Por eso el sprint va cargado en la Story. HU6 abarca los sprints 6 y 7: se importa en el Sprint 6, y al cerrarlo Jira ofrece pasar lo pendiente al Sprint 7.
+Las Subtasks no llevan Sprint: Jira siempre las mantiene en el sprint de su Story. Por eso el sprint va cargado en la Story. HU6 abarca los sprints 6 y 7: se importa en el Sprint 6, y al cerrarlo Jira ofrece pasar lo pendiente al Sprint 7.
 
 ## 2. Importar el CSV
 
-Jira → ícono de engranaje (arriba a la derecha) → **System** → **External System Import** → **CSV**. Subí `jira_import.csv`.
+Hay **dos importadores de CSV distintos** en Jira Cloud, y arman jerarquías de forma muy distinta:
 
-En la pantalla de mapeo de columnas:
+- **"Import work items from CSV"** (Filtros → Search work items → ••• → Import work items from CSV): lo puede usar cualquier usuario con permiso para crear issues, pero **no arma jerarquías** (Epic → Story → Subtask). Sirve solo para cargar issues sueltos.
+- **"External System Import"** (ícono de engranaje → **System** → **External System Import** → **CSV**): el único que arma la jerarquía completa en una sola pasada, usando un par de columnas `Issue ID`/`Parent` ([documentado por Atlassian](https://support.atlassian.com/jira/kb/keep-issue-parent-child-mapping-during-csv-import-to-jira-cloud/)). **Requiere ser administrador del sitio o de la organización** — vos no lo sos (lo vimos en tu menú de configuración, que solo muestra "Personal Jira settings").
 
-| Columna del CSV | Campo de Jira |
-|---|---|
-| `Issue Id` | **Issue id** (campo especial del importador, no es un campo real de Jira) |
-| `Parent Id` | **Parent id** |
-| `Issue Type` | Issue Type |
-| `Summary` | Summary |
-| `Description` | Description |
-| `Priority` | Priority |
-| `Story Points` | Story point estimate |
-| `Sprint` | Sprint |
-| `Start date` | Start date |
-| `Due date` | Due date |
-| `Labels` | Labels |
+`jira_import.csv` está armado para el segundo importador. Como no tenés ese permiso, la opción real es:
 
-Las fechas están en formato `2026-11-23`. En la configuración del importador, poné el formato de fecha en `yyyy-MM-dd`; si no, Jira puede rechazar o malinterpretar las fechas.
+### Opción A (recomendada): que el administrador de Jira lo corra por vos
 
-El par **Issue id / Parent id** es la clave: le dice a Jira "esta fila es hija de aquella otra fila del mismo archivo", y Jira infiere automáticamente si esa relación es *Epic Link* (cuando el padre es una Epic) o *parent de sub-tarea* (cuando el padre es una Story). No son campos reales de Jira — existen solo para resolver la jerarquía durante la importación, así que no vas a verlos después en los issues creados.
+Mandale al administrador de Jira de MobileKnowledge el archivo `jira_import.csv` y estos pasos:
 
-Revisá el preview (Jira te muestra una tabla antes de confirmar) y lanzá la importación.
+1. Ícono de engranaje → **System** → **External System Import** → **CSV**.
+2. Elegir el Space `NLOS` existente como destino, subir `jira_import.csv`.
+3. En la pantalla de mapeo, estas columnas van tal cual (incluido el formato de fecha `yyyy-MM-dd`):
 
-### Si tu instancia no soporta Issue id/Parent id
+   | Columna del CSV | Campo de Jira |
+   |---|---|
+   | `Issue ID` | **Issue ID** (campo especial del importador) |
+   | `Parent` | **Parent** |
+   | `Issue Type` | Issue Type |
+   | `Summary` | Summary |
+   | `Description` | Description |
+   | `Priority` | Priority |
+   | `Story Points` | Story point estimate |
+   | `Sprint` | Sprint |
+   | `Start date` | Start date |
+   | `Due date` | Due date |
+   | `Labels` | Labels |
 
-Algunas instancias con el importador CSV restringido (o configuraciones de administrador distintas) no resuelven bien esta jerarquía en una sola pasada. Si después de importar ves las Stories o Sub-tareas sueltas, sin padre:
+4. Revisar el preview (Jira arma un resumen antes de confirmar) y lanzar la importación.
 
-1. Filtrá el CSV para quedarte solo con las filas `Epic` + `Story` (quitá las de `Issue Type = Subtask/Task`) e importá primero esa versión reducida.
-2. Anotá las claves reales que Jira asignó a cada HU (p. ej. `NLOS-6` para HU1, `NLOS-7` para HU2, etc.).
-3. En el CSV completo, hacé buscar-y-reemplazar de cada `HU1`, `HU2`... (columna `Parent Id`) por la clave real (`NLOS-6`, `NLOS-7`...), y de `E1`...`E5` por las claves reales de las épicas.
-4. Importá de nuevo, ahora solo las filas `Subtask`/`Task`.
+Es un único archivo, una sola pasada: el par `Issue ID`/`Parent` le dice a Jira qué fila es hija de cuál, y Jira resuelve sola si esa relación es el padre de una Epic o el padre de una Subtask, según el tipo de cada fila.
+
+### Opción B: si no conseguís que un admin lo corra
+
+Si no hay nadie con ese permiso disponible, se puede cargar todo a mano con el importador que sí tenés (**Import work items from CSV**), en 3 tandas, fijando el Parent de cada issue manualmente después de crearlo (ese importador no arma jerarquías, y Jira Cloud tampoco permite reasignar el Parent de muchos issues a la vez en un Space team-managed):
+
+1. Creá primero las 5 épicas a mano (son pocas, no vale la pena por CSV): `Create` → Epic, usando los Summary y fechas de las primeras 5 filas de `jira_import.csv`.
+2. Importá las 10 Stories con **Import work items from CSV** (filtrando el CSV a esas filas), sin la columna Parent. Después abrí cada una y asignale su épica a mano en el campo Parent (son 10).
+3. Importá las 86 Subtasks/Tasks de la misma forma, sin Parent. Después asignale a cada una su Story o la épica E5 a mano (son 86 — tedioso, pero cada una es un solo clic en un desplegable).
+
+Esta opción no necesita admin, pero es mucho más lenta. Avisame si llegás a necesitarla y te preparo los 3 CSV filtrados (sin la columna Parent, lista para este importador).
 
 ## 3. Crear los 12 sprints y fecharlos
 
