@@ -1,5 +1,12 @@
 # Guía: llevar la planificación del GdP V4 a Jira
 
+> Nota de terminología: desde fines de 2025 Atlassian renombró "Projects" a
+> "Spaces" en toda la interfaz de Jira. Es un cambio de nombre únicamente —
+> la distinción Team-managed/Company-managed, el importador CSV, los
+> sprints y la jerarquía Epic → Story → Sub-task funcionan exactamente
+> igual que antes, solo que el contenedor se llama "Space" en vez de
+> "Project". Esta guía ya usa esa terminología.
+
 Archivos en esta carpeta (`jira/` del repo):
 
 - `build_import.py` — script que genera los dos CSV de abajo (fuente de verdad; si corregís algo, editá este script y volvé a correrlo).
@@ -11,15 +18,15 @@ Archivos en esta carpeta (`jira/` del repo):
 Existe un conector MCP de Atlassian disponible, pero:
 
 1. Requiere autorización OAuth interactiva (`/mcp` en una sesión interactiva de Claude Code), que no está disponible aquí.
-2. Crear un **proyecto** nuevo en Jira normalmente exige permisos de administrador del sitio, que una cuenta corporativa individual suele no tener.
+2. Crear un **Space** nuevo en Jira normalmente exige permisos de administrador del sitio, que una cuenta corporativa individual suele no tener.
 
-Si más adelante querés que yo cree o actualice issues directamente vía API (una vez que el proyecto ya exista), corré `/mcp` en una sesión interactiva de Claude Code y autorizá el conector de Atlassian; en la próxima conversación podré leer y escribir issues de Jira con ese conector.
+Si más adelante querés que yo cree o actualice issues directamente vía API (una vez que el Space ya exista), corré `/mcp` en una sesión interactiva de Claude Code y autorizá el conector de Atlassian; en la próxima conversación podré leer y escribir issues de Jira con ese conector.
 
-## 1. Crear el proyecto
+## 1. Crear el Space
 
-1. En Jira, `Create project` → plantilla **Scrum** → tipo **Team-managed** (ícono de personas, no "Company-managed").
+1. En Jira, `Create space` → plantilla **Scrum** → tipo **Team-managed** (ícono de personas, no "Company-managed"; esta distinción no cambió con el rename a Spaces).
 2. Nombre sugerido: `NLoS Detection (UWB)`. Clave sugerida: `NLOS`.
-3. En `Project settings → Features`, confirmá que estén activos: **Sprints**, **Epics** y **Story points**. Si vas a usar la columna `Original Estimate`, activá también **Time tracking**.
+3. En `Space settings → Features`, confirmá que estén activos: **Sprints**, **Epics** y **Story points**. Si vas a usar la columna `Original Estimate`, activá también **Time tracking**.
 
 ## 2. Importar el CSV
 
@@ -58,7 +65,7 @@ Algunas instancias con el importador CSV restringido (o configuraciones de admin
 
 El importador de Jira crea los sprints por nombre (`Sprint 0`...`Sprint 11`) pero **no puede fijarles fecha de inicio/fin**. Después de importar:
 
-1. Andá al **Backlog** del proyecto. Vas a ver los 12 sprints creados (vacíos de fecha) con sus issues ya adentro.
+1. Andá al **Backlog** del Space. Vas a ver los 12 sprints creados (vacíos de fecha) con sus issues ya adentro.
 2. Para cada uno, abrí el menú `⋯ → Edit sprint` y cargá las fechas de `sprint_dates.csv`:
 
 | Sprint | Inicio | Fin |
@@ -99,4 +106,4 @@ Si querés que en futuras conversaciones yo pueda leer el estado del tablero, ac
 
 1. En una sesión **interactiva** de Claude Code (no en este modo), corré `/mcp`.
 2. Autorizá el conector `plugin:product-management:atlassian` contra tu cuenta corporativa (tu administrador de Jira debe permitir apps/conectores OAuth de terceros — si no podés autorizarlo vos mismo, es por política de la organización).
-3. En la próxima conversación yo podré usar ese conector sobre el proyecto que ya creaste con esta guía.
+3. En la próxima conversación yo podré usar ese conector sobre el Space que ya creaste con esta guía.
